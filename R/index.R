@@ -16,7 +16,7 @@ xapian_index_exampleI <- function()
   data<-data.frame(ID_NUMBER,ITEM_NAME,TITLE)
   db<- tempfile(pattern="RXapianEx-")
   id<-c(0)
-  indexFields<-list(list(index=2,prefix="S"),list(index=8,prefix="XD"))
+  indexFields<-list(list(index=2,prefix="S"))
   xapian_index(dbpath = db,dataFrame = data,idColumn = id,indexFields = indexFields,stemmer = "en")
   
 }
