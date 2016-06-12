@@ -43,15 +43,13 @@ template<> SEXP wrap(const Xapian::Database &db) {
 
 }
 
-//' DatabaseInfo Wrapper
+//' DatabaseInfo wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
 //' dbpath<- c("path/to/database")
 //' databaseInfo(dbpath)
-//' 
 //' }
 //' 
 //' @return list of information about the Xapian database at specified location
@@ -61,15 +59,20 @@ Rcpp::List databaseInfo(SEXP dbpath){
   return Rcpp::wrap(db);
 }
 
-//' 
+//' Database setmetadata wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param key    key of the metadata item to set
+//' @param value  value of the metadata item to set
 //' @examples
 //' \dontrun{
 //' dbpath<- c("path/to/database")
+//' key<-c("k1")
+//' value<-c("v1")
+//' setmetadata(dbpath,key,value)
 //' }
 //' 
-//' @return 
+//' @return none
 // [[Rcpp::export]]
 void setmetadata(SEXP dbpath,SEXP key,SEXP value){
   std::string path=Rcpp::as<std::string>(dbpath);
@@ -79,31 +82,37 @@ void setmetadata(SEXP dbpath,SEXP key,SEXP value){
   db.set_metadata(akey,aVal);
 }
 
-//' 
+//' Database getmetadata wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param key    key of the metadata item to access
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' key<-c("k1")
+//' getmetadata(dbpath,key)
 //' }
 //' 
-//' @return 
+//' @return user-specified metadata associated with the given key
 // [[Rcpp::export]]
-Rcpp::StringVector metadata(SEXP dbpath,SEXP key){
+Rcpp::StringVector getmetadata(SEXP dbpath,SEXP key){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   std::string akey=Rcpp::as<std::string>(key);
   return db.get_metadata(akey);
 }
 
-//' 
+//' Database spelling_suggestion wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param arg    potentially misspelled word
 //' @examples
 //' \dontrun{
-//' 
+//'  dbpath<- c("path/to/database")
+//'  arg<-list(word="helllo", max_edit_distance = 3)
+//'  spelling_suggestion(dbpath,arg)
 //' }
 //' 
-//' @return 
+//' @return a spelling correction to a potentially misspelled word
 // [[Rcpp::export]]
 Rcpp::StringVector spelling_suggestion(SEXP dbpath,SEXP arg){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
@@ -123,15 +132,18 @@ Rcpp::StringVector spelling_suggestion(SEXP dbpath,SEXP arg){
   return suggtn;
 }
 
-//' 
+//' Database collection_freq wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param tname  term whose collection frequency is being requested
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' tname<-c("test")
+//' collection_freq(dbpath,tname)
 //' }
 //' 
-//' @return 
+//' @return total number of occurrences of the given term
 // [[Rcpp::export]]
 Rcpp::NumericVector collection_freq(SEXP dbpath,SEXP tname){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
@@ -140,15 +152,18 @@ Rcpp::NumericVector collection_freq(SEXP dbpath,SEXP tname){
   return freq;
 }
 
-//' 
+//' Database value_freq wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param slot   value slot to examine
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' slot<-c(1)
+//' value_freq(dbpath,slot)
 //' }
 //' 
-//' @return 
+//' @return frequency of the given value slot
 // [[Rcpp::export]]
 Rcpp::NumericVector value_freq(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
@@ -157,15 +172,18 @@ Rcpp::NumericVector value_freq(SEXP dbpath,SEXP slot){
   return freq;
 }
 
-//' 
+//' Database value_lower_bound wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param slot   value slot to examine
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' slot<-c(1)
+//' value_lower_bound(dbpath,slot)
 //' }
 //' 
-//' @return 
+//' @return  a lower bound on the values stored in the given value slot
 // [[Rcpp::export]]
 Rcpp::NumericVector value_lower_bound(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
@@ -174,15 +192,18 @@ Rcpp::NumericVector value_lower_bound(SEXP dbpath,SEXP slot){
   return val;
 }
 
-//' 
+//' Database value_upper_bound wrapper
 //' 
 //' @param dbpath path to a Xapian Database
+//' @param slot   value slot to examine
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' slot<-c(1)
+//' value_upper_bound(dbpath,slot)
 //' }
 //' 
-//' @return 
+//' @return an upper bound on the values stored in the given value slot
 // [[Rcpp::export]]
 Rcpp::NumericVector value_upper_bound(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
@@ -191,105 +212,112 @@ Rcpp::NumericVector value_upper_bound(SEXP dbpath,SEXP slot){
   return val;
 }
 
-//' 
+//' Database uuid wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' uuid(dbpath)
 //' }
 //' 
-//' @return 
+//' @return a UUID for the database
 // [[Rcpp::export]]
 Rcpp::StringVector uuid(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_uuid();
 }
 
-//' 
+//' Database doccount wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' doccount(dbpath)
 //' }
 //' 
-//' @return 
+//' @return number of documents in the database
 // [[Rcpp::export]]
 Rcpp::NumericVector doccount(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_doccount();
 }
 
-//' 
+//' Database avlength wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' avlength(dbpath)
 //' }
 //' 
-//' @return 
+//' @return average length of the documents in the database
 // [[Rcpp::export]]
 Rcpp::NumericVector avlength(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_avlength();
 }
 
-//' 
+//' Database doclength_lower_bound wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' doclength_lower_bound(dbpath)
 //' }
 //' 
-//' @return 
+//' @return a lower bound on the length of a document in the database
 // [[Rcpp::export]]
 Rcpp::NumericVector doclength_lower_bound(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_doclength_lower_bound();
 }
 
-//' 
+//' Database doclength_upper_bound wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' doclength_upper_bound(dbpath)
 //' }
 //' 
-//' @return 
+//' @return an upper bound on the length of a document in the database
 // [[Rcpp::export]]
 Rcpp::NumericVector doclength_upper_bound(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_doclength_upper_bound();
 }
 
-//' 
+//' Database lastdocid wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' lastdocid(dbpath)
 //' }
 //' 
-//' @return 
+//' @return highest document id which has been used in the database
 // [[Rcpp::export]]
 Rcpp::NumericVector lastdocid(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   return db.get_lastdocid();
 }
 
-//' 
+//' Database has_positions wrapper
 //' 
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
-//' 
+//' dbpath<- c("path/to/database")
+//' has_positions(dbpath)
 //' }
 //' 
-//' @return 
+//' @return whether this database has any positional information
 // [[Rcpp::export]]
 Rcpp::LogicalVector has_positions(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
