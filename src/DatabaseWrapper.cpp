@@ -66,6 +66,24 @@ Rcpp::List databaseInfo(SEXP dbpath){
 //' @param dbpath path to a Xapian Database
 //' @examples
 //' \dontrun{
+//' dbpath<- c("path/to/database")
+//' }
+//' 
+//' @return 
+// [[Rcpp::export]]
+void setmetadata(SEXP dbpath,SEXP key,SEXP value){
+  std::string path=Rcpp::as<std::string>(dbpath);
+  Xapian::WritableDatabase db(path, Xapian::DB_CREATE_OR_OPEN);
+  std::string akey=Rcpp::as<std::string>(key);
+  std::string aVal=Rcpp::as<std::string>(value);
+  db.set_metadata(akey,aVal);
+}
+
+//' 
+//' 
+//' @param dbpath path to a Xapian Database
+//' @examples
+//' \dontrun{
 //' 
 //' }
 //' 

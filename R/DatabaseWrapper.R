@@ -137,6 +137,26 @@ xapian_dbHas_positions<-function(dbpath){
 #' }
 #' @return 
 #' @export
+xapian_dbsetMetadata <-function(dbpath,
+                             key,
+                             value){
+  checkmate::assertCharacter(dbpath)
+  checkmate::assertCharacter(key)
+  checkmate::assertCharacter(value)
+  setmetadata(dbpath,key,value)
+}
+
+#' 
+#'
+#' @param dbpath	path to a Xapian database
+#' @examples
+#' \dontrun{
+#' 
+#' db<- c("path/to/database")
+#' 
+#' }
+#' @return 
+#' @export
 xapian_dbMetadata <-function(dbpath,
                              key){
   checkmate::assertCharacter(dbpath)
