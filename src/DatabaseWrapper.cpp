@@ -149,7 +149,9 @@ Rcpp::NumericVector collection_freq(SEXP dbpath,SEXP tname){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   std::string aTname=Rcpp::as<std::string>(tname);
   int freq=db.get_collection_freq(aTname);
-  return freq;
+  Rcpp::NumericVector collection_freq;
+  collection_freq.push_back(freq);
+  return collection_freq;
 }
 
 //' Database value_freq wrapper
@@ -169,7 +171,9 @@ Rcpp::NumericVector value_freq(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   int aSlot=Rcpp::as<int>(slot);
   int freq=db.get_value_freq(aSlot);
-  return freq;
+  Rcpp::NumericVector value_freq;
+  value_freq.push_back(freq);
+  return value_freq;
 }
 
 //' Database value_lower_bound wrapper
@@ -241,7 +245,9 @@ Rcpp::StringVector uuid(SEXP dbpath){
 // [[Rcpp::export]]
 Rcpp::NumericVector doccount(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
-  return db.get_doccount();
+  Rcpp::NumericVector doccount;
+  doccount.push_back(db.get_doccount());
+  return doccount;
 }
 
 //' Database avlength wrapper
@@ -257,7 +263,9 @@ Rcpp::NumericVector doccount(SEXP dbpath){
 // [[Rcpp::export]]
 Rcpp::NumericVector avlength(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
-  return db.get_avlength();
+  Rcpp::NumericVector avlength;
+  avlength.push_back(db.get_avlength());
+  return avlength;
 }
 
 //' Database doclength_lower_bound wrapper
@@ -273,7 +281,9 @@ Rcpp::NumericVector avlength(SEXP dbpath){
 // [[Rcpp::export]]
 Rcpp::NumericVector doclength_lower_bound(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
-  return db.get_doclength_lower_bound();
+  Rcpp::NumericVector doclength_lower_bound;
+  doclength_lower_bound.push_back( db.get_doclength_lower_bound());
+  return doclength_lower_bound;
 }
 
 //' Database doclength_upper_bound wrapper
@@ -289,7 +299,9 @@ Rcpp::NumericVector doclength_lower_bound(SEXP dbpath){
 // [[Rcpp::export]]
 Rcpp::NumericVector doclength_upper_bound(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
-  return db.get_doclength_upper_bound();
+  Rcpp::NumericVector doclength_upper_bound;
+  doclength_upper_bound.push_back( db.get_doclength_upper_bound());
+  return doclength_upper_bound;
 }
 
 //' Database lastdocid wrapper
@@ -305,7 +317,9 @@ Rcpp::NumericVector doclength_upper_bound(SEXP dbpath){
 // [[Rcpp::export]]
 Rcpp::NumericVector lastdocid(SEXP dbpath){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
-  return db.get_lastdocid();
+  Rcpp::NumericVector lastdocid;
+  lastdocid.push_back(db.get_lastdocid());
+  return lastdocid;
 }
 
 //' Database has_positions wrapper
