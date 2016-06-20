@@ -185,7 +185,7 @@ Rcpp::NumericVector value_freq(SEXP dbpath,SEXP slot){
 //' 
 //' @return  a lower bound on the values stored in the given value slot
 // [[Rcpp::export]]
-Rcpp::NumericVector value_lower_bound(SEXP dbpath,SEXP slot){
+Rcpp::StringVector value_lower_bound(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   int aSlot=Rcpp::as<int>(slot);
   std::string val=db.get_value_lower_bound(aSlot);
@@ -205,7 +205,7 @@ Rcpp::NumericVector value_lower_bound(SEXP dbpath,SEXP slot){
 //' 
 //' @return an upper bound on the values stored in the given value slot
 // [[Rcpp::export]]
-Rcpp::NumericVector value_upper_bound(SEXP dbpath,SEXP slot){
+Rcpp::StringVector value_upper_bound(SEXP dbpath,SEXP slot){
   Xapian::Database db=Rcpp::as<Xapian::Database>(dbpath);
   int aSlot=Rcpp::as<int>(slot);
   std::string val=db.get_value_upper_bound(aSlot);
