@@ -70,7 +70,7 @@ xapian_dbAvlength<-function(dbpath){
 #' @export
 xapian_dbDoclength_lower_bound<-function(dbpath){
   checkmate::assertCharacter(dbpath)
-  uuid(dbpath)
+  doclength_lower_bound(dbpath)
 }
 
 #' Database doclength_upper_bound
@@ -85,7 +85,7 @@ xapian_dbDoclength_lower_bound<-function(dbpath){
 #' @export
 xapian_dbDoclength_upper_bound<-function(dbpath){
   checkmate::assertCharacter(dbpath)
-  doclength_upper_bound<(dbpath)
+  doclength_upper_bound(dbpath)
 }
 
 #' Database lastdocid
