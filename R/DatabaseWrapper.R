@@ -70,7 +70,7 @@ xapian_dbAvlength<-function(dbpath){
 #' @export
 xapian_dbDoclength_lower_bound<-function(dbpath){
   checkmate::assertCharacter(dbpath)
-  uuid(dbpath)
+  doclength_lower_bound(dbpath)
 }
 
 #' Database doclength_upper_bound
@@ -85,7 +85,7 @@ xapian_dbDoclength_lower_bound<-function(dbpath){
 #' @export
 xapian_dbDoclength_upper_bound<-function(dbpath){
   checkmate::assertCharacter(dbpath)
-  doclength_upper_bound<(dbpath)
+  doclength_upper_bound(dbpath)
 }
 
 #' Database lastdocid
@@ -175,7 +175,7 @@ xapian_dbMetadata <-function(dbpath,
 xapian_dbSpelling_suggestion<-function(dbpath,
                                        arg){
   checkmate::assertCharacter(dbpath)
-  checkmate::assertCharacter(arg)
+  checkmate::assertList(arg)
   spelling_suggestion(dbpath,arg)
 }
 
@@ -213,7 +213,7 @@ xapian_dbCollection_freq<-function(dbpath,
 xapian_dbValue_freq<-function(dbpath,
                               slot){
   checkmate::assertCharacter(dbpath)
-  checkmate::assertCharacter(slot)
+  checkmate::assertNumber(slot)
   value_freq(dbpath,slot)
 }
 
@@ -232,7 +232,7 @@ xapian_dbValue_freq<-function(dbpath,
 xapian_dbValue_lower_bound<-function(dbpath,
                                      slot){
   checkmate::assertCharacter(dbpath)
-  checkmate::assertCharacter(slot)
+  checkmate::assertNumber(slot)
   value_lower_bound(dbpath,slot)
 }
 
@@ -251,6 +251,6 @@ xapian_dbValue_lower_bound<-function(dbpath,
 xapian_dbValue_upper_bound<-function(dbpath,
                                      slot){
   checkmate::assertCharacter(dbpath)
-  checkmate::assertCharacter(slot)
+  checkmate::assertNumber(slot)
   value_upper_bound(dbpath,slot)
 }
