@@ -1,0 +1,12 @@
+.Rproj.user
+*.Rproj
+.Rhistory
+*.RData
+*.o
+*.so
+*.R~
+*~
+config.log
+config.status
+Makevars
+
