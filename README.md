@@ -6,7 +6,7 @@
 
 install.packages("devtools")
 library(devtools)
-install_github("amandaJayanetti/xapianExamples")
+install_github("amandaJayanetti/RXapian")
 
 ```
 ###### Indexing a data frame with RXapian
