@@ -36,7 +36,7 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   return dataFrame;
 }
 
-int columnNo(const string & data){
+int lineCount(const string & data){
   int col=0;
   std::istringstream stream(data);
   std::string line;
@@ -140,8 +140,7 @@ Rcpp::List searchWrapper(Rcpp::CharacterVector & dbpath,Rcpp::List & queryList){
   
   int cols=0;
   const string & data = mset.begin().get_document().get_data();
-  cols=columnNo(data);
-  
+  cols=lineCount(data); 
   
   Rcpp::List output;
   for(int i=0;i<cols;i++){
