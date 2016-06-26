@@ -139,11 +139,9 @@ Rcpp::List searchWrapper(Rcpp::CharacterVector & dbpath,Rcpp::List & queryList){
   Xapian::MSet mset = enquire.get_mset(offset, pagesize);
   
   int cols=0;
-  for (Xapian::MSetIterator m = mset.begin(); m != mset.end(); ++m) {
-    const string & data = m.get_document().get_data();
-    cols=columnNo(data);
-    break;
-  }
+  const string & data = mset.begin().get_document().get_data();
+  cols=columnNo(data);
+  
   
   Rcpp::List output;
   for(int i=0;i<cols;i++){
