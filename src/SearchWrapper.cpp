@@ -27,7 +27,6 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   int ascii=97; 
   for (int j = 0; j < dataFrame.length(); ++j) {
     char name[6];
-    //sprintf(&(name[0]), "%d", j+1);
     snprintf(name, 6, "%c", char(ascii++));
     colNames(j) = name;
   }
