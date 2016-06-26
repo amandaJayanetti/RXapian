@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <xapian.h>
+#include <stdio.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -15,7 +16,7 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   
   for (int i = 0; i < aRow.length(); ++i) {
     char name[5];
-    sprintf(&(name[0]), "%d", i+1);
+    snprintf(name, 5, "%d", i+1);
     rowNames(i) = name;
   }
   
@@ -26,7 +27,7 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   for (int j = 0; j < dataFrame.length(); ++j) {
     char name[6];
     //sprintf(&(name[0]), "%d", j+1);
-    sprintf(&(name[0]), "%c", char(ascii++));
+    snprintf(name, 6, "%c", char(ascii++));
     colNames(j) = name;
   }
   
@@ -120,7 +121,7 @@ Rcpp::List searchWrapper(Rcpp::CharacterVector & dbpath,Rcpp::List & queryList){
   
   // Open the Xapian::Database that is to be searched 
   Xapian::Database db(path);
- 
+  
   // Create a Xapian::Query from user specified data
   Xapian::Query query = parseQuery(aQuery);
   
