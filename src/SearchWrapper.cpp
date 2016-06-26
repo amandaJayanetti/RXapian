@@ -36,7 +36,7 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   return dataFrame;
 }
 
-int columnNo( const string & data){
+int columnNo(const string & data){
   int col=0;
   std::istringstream stream(data);
   std::string line;
