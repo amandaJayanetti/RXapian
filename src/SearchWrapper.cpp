@@ -24,10 +24,10 @@ Rcpp::List convertToDataFrame(Rcpp::List list) {
   Rcpp::StringVector colNames(dataFrame.length());
   
   // Name columns from 'a' upwards
-  int ascii=97; 
-  for (int j = 0; j < dataFrame.length(); ++j) {
+  int ascii; 
+  for (int j=0, ascii=97; j < dataFrame.length(); ++j, ++ascii) {
     char name[6];
-    snprintf(name, 6, "%c", char(ascii++));
+    snprintf(name, 6, "%c", ascii);
     colNames(j) = name;
   }
   
