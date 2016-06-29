@@ -137,25 +137,26 @@ Rcpp::List searchWrapper(Rcpp::CharacterVector & dbpath,Rcpp::List & queryList){
   //Create and return a data.frame with results for the searched query
   
   Xapian::MSet mset = enquire.get_mset(offset, pagesize);
-  
-  int cols=0;
-  const string & data = mset.begin().get_document().get_data();
-  cols=lineCount(data); 
-  
-  Rcpp::List output;
-  for(int i=0;i<cols;i++){
-    Rcpp::List rowVec;
-    for (Xapian::MSetIterator m = mset.begin(); m != mset.end(); ++m) {
-      const string & data = m.get_document().get_data();
-      string aVal=rowVal(data,i);
-      rowVec.push_back(aVal);
+  if(!(mset.begin()==mset.end())){
+    int cols=0;
+    const string & data = mset.begin().get_document().get_data();
+    cols=lineCount(data); 
+    
+    Rcpp::List output;
+    for(int i=0;i<cols;i++){
+      Rcpp::List rowVec;
+      for (Xapian::MSetIterator m = mset.begin(); m != mset.end(); ++m) {
+        const string & data = m.get_document().get_data();
+        string aVal=rowVal(data,i);
+        rowVec.push_back(aVal);
+      }
+      stringstream ss;
+      ss << i;
+      string str = ss.str();
+      output[str]=rowVec;
     }
-    stringstream ss;
-    ss << i;
-    string str = ss.str();
-    output[str]=rowVec;
+    
+    return convertToDataFrame(output);
   }
-  
-  return convertToDataFrame(output);
-  
+  else return NULL;
 }
