@@ -24,6 +24,7 @@ xapian_index <- function(dbpath,
                          idColumn=NULL,
                          indexFields=NULL, 
                          filterFields=NULL, 
+                         valueSlots=NULL,
                          stemmer = c(
                            "english", "en",
                            "danish", "da",
@@ -51,7 +52,9 @@ xapian_index <- function(dbpath,
   checkmate::assertList(indexFields)
   if(!is.null(filterFields))
     checkmate::assertList(filterFields)
+  if(!is.null(valueSlots))
+    checkmate::assertList(valueSlots)
   stemmer <- match.arg(stemmer)
   
-  indexWrapper(dbpath,dataFrame,idColumn,indexFields,filterFields,stemmer);
+  indexWrapper(dbpath,dataFrame,idColumn,indexFields,filterFields,valueSlots,stemmer);
 }
