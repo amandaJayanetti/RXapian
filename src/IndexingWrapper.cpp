@@ -138,7 +138,6 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
     if (id < 0 || id > dfCols) Rcpp::stop("Invalid argument for indexCol");
     Rcpp::List indexList = indexFields;
     Rcpp::List filterList = filterFields;
-    Rcpp::List slotList = valueSlots;
 
     // Create or open the Xapian::Database at the specified location
     Xapian::WritableDatabase db(path, Xapian::DB_CREATE_OR_OPEN);
@@ -246,44 +245,59 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	}
 
 	//Add value slots
-	for (Rcpp::List::iterator it = slotList.begin(); it != slotList.end(); ++it) {
-	    Rcpp::List list = it.operator*();
+	for (Rcpp::List::iterator it = valueSlots.begin(); it != valueSlots.end(); ++it) {
+	    Rcpp::List list = *it;
 	    bool serialiseVal = false;
-	    bool dfVal = true; // use original row values in data frame
+	    bool override_frame_values = false; // use original row values in data frame
 	    int slot;
 	    std::string val;
 
-	    try {
-		slot = Rcpp::as<int>(list["slot"]);
-	    } catch (...) {
+	    if (list.containsElementNamed("slot")) {
+		try {
+		    slot = Rcpp::as<int>(list["slot"]);
+		} catch (...) {
+		    Rcpp::stop("Invalid argument for slot");
+		}
+	    } else
 		Rcpp::stop("Slot number should be specified.");
-	    }
 
 	    if (list.containsElementNamed("serialise")) serialiseVal = Rcpp::as<bool>(list["serialise"]);
-	    if (list.containsElementNamed("values")) dfVal = false; // use a column vector of modified row values
+	    if (list.containsElementNamed("values"))
+		override_frame_values = true; // use a column vector of modified row values
 
-	    if (dfVal) {
+	    if (!override_frame_values) {
 		int colNo;
 
-		try {
-		    if (list.containsElementNamed("index")) {
+		if (list.containsElementNamed("index")) {
+		    try {
 			colNo = Rcpp::as<int>(list["index"]);
-		    } else {
-			std::string colName = Rcpp::as<std::string>(list["name"]);
-			colNo = colIndex(df, colName);
+			if (colNo < 0 || colNo > dfCols)
+			    Rcpp::stop(
+			        "Invalid argument: index should correspond to a column number in the data frame");
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for index");
 		    }
-		} catch (...) {
+		} else if (list.containsElementNamed("name")) {
+		    std::string colName;
+		    try {
+			colName = Rcpp::as<std::string>(list["name"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for name");
+		    }
+		    colNo = colIndex(df, colName);
+		} else
 		    Rcpp::stop("Either name or index of the columns should be specified.");
-		}
-
-		if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for valueSlots");
 
 		const string & field = Rcpp::as<std::string>(dfRow[colNo]);
 
 		if (serialiseVal) {
 		    double dVal;
-		    stringstream ss(field);
-		    ss >> dVal;
+		    try {
+			stringstream ss(field);
+			ss >> dVal;
+		    } catch (...) {
+			Rcpp::stop("Error in parsing data frame field as a double");
+		    }
 		    doc.add_value(slot, Xapian::sortable_serialise(dVal));
 		} else {
 		    doc.add_value(slot, field);
@@ -294,13 +308,12 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 		    Rcpp::DoubleVector dVec = list["values"];
 		    double dVal = dVec[i];
 		    if (!(Rcpp::DoubleVector::is_na(dVal))) doc.add_value(slot, Xapian::sortable_serialise(dVal));
-		}
-		if (vecType == "character") {
+		} else {
 		    Rcpp::StringVector sVec = list["values"];
 		    std::string sVal = Rcpp::as<std::string>(sVec[i]);
 		    if (serialiseVal) {
 			double dVal;
-			stringstream ss(sVal); //turn field into a stream
+			stringstream ss(sVal);
 			ss >> dVal;
 			doc.add_value(slot, Xapian::sortable_serialise(dVal));
 		    } else {
