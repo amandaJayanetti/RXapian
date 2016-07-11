@@ -1,11 +1,11 @@
 #include <Rcpp.h>
-#include <xapian.h>
-#include <stdio.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <stdio.h>
 #include <string>
 #include <vector>
+#include <xapian.h>
 
 using namespace std;
 
@@ -84,7 +84,7 @@ parseQuery(Rcpp::List & query)
 	}
 
 	if (query.containsElementNamed("strategy")) {
-	    //maybe an if else should be used here
+	    // maybe an if else should be used here
 	} else
 	    queryparser.set_stemming_strategy(queryparser.STEM_SOME);
 
@@ -105,6 +105,19 @@ parseQuery(Rcpp::List & query)
     return returnQuery;
 }
 
+std::vector<Xapian::ValueCountMatchSpy *>
+parseSpy(Xapian::Enquire enquire, Rcpp::NumericVector & spy)
+{
+    std::vector<Xapian::ValueCountMatchSpy *> aList;
+    for (Rcpp::NumericVector::iterator itr = spy.begin(); itr != spy.end(); ++itr) {
+	Xapian::ValueCountMatchSpy * aSpy = new Xapian::ValueCountMatchSpy(*itr);
+	Rcpp::Rcout << *itr << std::endl;
+	enquire.add_matchspy(aSpy);
+	aList.push_back(aSpy);
+    }
+    return aList;
+}
+
 //' Search wrapper
 //'
 //' @param dbpath	path to a Xapian database
@@ -117,35 +130,47 @@ parseQuery(Rcpp::List & query)
 //'             prefix.fields=list(list(prefix="S",name="title"),
 //'                           list(prefix="XD",name="description")),
 //'             stemmer="en")
-//' searchWrapper(db,query)
+//' enq<-list(matchspy=c(0,1))
+//' searchWrapper(db,enq,query)
 //' }
 //'
 //' @return
 // [[Rcpp::export]]
 Rcpp::List
-searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & queryList)
+searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::List & queryList)
 {
-    Rcpp::List aQuery = queryList;
     std::string path = Rcpp::as<std::string>(dbpath);
 
     // Open the Xapian::Database that is to be searched
     Xapian::Database db(path);
 
     // Create a Xapian::Query from user specified data
-    Xapian::Query query = parseQuery(aQuery);
+    Xapian::Query query = parseQuery(queryList);
 
-    //Use a Xapian::Enquire object on the Xapian::Database to run the query
+    // Use a Xapian::Enquire object on the Xapian::Database to run the query
     Xapian::Enquire enquire(db);
     enquire.set_query(query);
 
-    // offset - defines starting point within result set
+    // Set up a spy to inspect a particular value at specified slot
+    std::vector<Xapian::ValueCountMatchSpy *> spy;
+    if (enquireList.containsElementNamed("matchspy")) {
+	Rcpp::NumericVector spyVec = enquireList["matchspy"];
+	spy = parseSpy(enquire, spyVec);
+    }
+
+    // first- defines starting point within result set
     // pagesize - defines number of records to retrieve
-    Xapian::doccount offset = 0;
-    Xapian::doccount pagesize = 10;
+    Xapian::doccount first = 0;
+    Xapian::doccount maxitems = 10;
+    Xapian::doccount checkatleast = 0;
 
-    //Create and return a data.frame with results for the searched query
+    if (enquireList.containsElementNamed("first")) first = Rcpp::as<int>(enquireList["first"]);
+    if (enquireList.containsElementNamed("first")) maxitems = Rcpp::as<int>(enquireList["maxitems"]);
+    if (enquireList.containsElementNamed("checkatleast")) checkatleast = Rcpp::as<int>(enquireList["checkatleast"]);
 
-    Xapian::MSet mset = enquire.get_mset(offset, pagesize);
+    // Create and return a data.frame with results for the searched query
+
+    Xapian::MSet mset = enquire.get_mset(first, maxitems, checkatleast);
     if (!(mset.begin() == mset.end())) {
 	int cols = 0;
 	const string & data = mset.begin().get_document().get_data();
@@ -163,6 +188,20 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & queryList)
 	    ss << i;
 	    string str = ss.str();
 	    output[str] = rowVec;
+	}
+
+	bool displaySpies = true;
+	if (enquireList.containsElementNamed("viewSpies")) displaySpies = Rcpp::as<bool>(enquireList["viewSpies"]);
+
+	if (displaySpies) {
+	    // Fetch and display the spy values
+	    for (std::vector<Xapian::ValueCountMatchSpy *>::iterator itr = spy.begin(); itr != spy.end(); ++itr) {
+		Rcpp::Rcout << "new spy" << std::endl;
+		Xapian::ValueCountMatchSpy * aSpy = *itr;
+		for (Xapian::TermIterator facet = aSpy->values_begin(); facet != aSpy->values_end(); ++facet) {
+		    Rcpp::Rcout << "Facet: " << *facet << "; count: " << facet.get_termfreq() << std::endl;
+		}
+	    }
 	}
 
 	return convertToDataFrame(output);
