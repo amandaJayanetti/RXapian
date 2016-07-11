@@ -11,17 +11,22 @@
 #'              prefix.fields=list( list(prefix="S",name="title"), list(prefix="XD",name="description")), 
 #'              stemmer="en")
 #'
-#' res<-xapian_search(db,query)
+#' enq<-list(matchspy=c(0,1))
+#'
+#' res<-xapian_search(db,enq,query)
 #' 
 #' }
 #' @return data frame with results for the query string
 #' @export
 xapian_search <- function(dbpath=NULL,
+                          enquireList=NULL,
                           queryList=NULL)
 {
   checkmate::assertCharacter(dbpath)
   checkmate::assertList(queryList)
+  if(!is.null(enquireList))
+    checkmate::assertList(enquireList)
   
-  result<-searchWrapper(dbpath,queryList)
+  result<-searchWrapper(dbpath,enquireList,queryList)
   
 }
