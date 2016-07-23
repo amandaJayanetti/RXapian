@@ -98,8 +98,173 @@ parseQuery(Rcpp::List & query)
 	    }
 	}
 
+	//check for RangeProcessors
+	if (query.containsElementNamed("VRP")) {
+	    Rcpp::List processors = query["VRP"];
+
+	    for (Rcpp::List::iterator it = processors.begin(); it != processors.end(); ++it) {
+		Rcpp::List list = *it;
+		string type = Rcpp::as<std::string>(list["type"]);
+
+		//if NumberRangeProcessor
+		if (!type.compare("proc.num")) {
+		    int aVal = list["value"];
+
+		    if (list.containsElementNamed("check.str")) {
+			string aStr = Rcpp::as<std::string>(list["check.str"]);
+
+			unsigned flags = 0;
+			Rcpp::StringVector flagVec;
+			if (list.containsElementNamed("flags")) {
+			    flagVec = list["flags"];
+			    for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+				std::string aflag = Rcpp::as<std::string>(*itr);
+				if (!aflag.compare("RP_SUFFIX"))
+				    flags = flags | Xapian::RP_SUFFIX;
+				else
+				    flags = flags | Xapian::RP_REPEATED;
+			    }
+			}
+			Xapian::NumberRangeProcessor * num_proc = new Xapian::NumberRangeProcessor(aVal, aStr, flags);
+			queryparser.add_rangeprocessor(num_proc);
+		    } else {
+			Xapian::NumberRangeProcessor * num_proc = new Xapian::NumberRangeProcessor(aVal);
+			queryparser.add_rangeprocessor(num_proc);
+		    }
+		}
+
+		//if RangeProcessor
+		if (!type.compare("proc.str")) {
+		    int aVal = list["value"];
+		    if (list.containsElementNamed("check.str")) {
+			string aStr = Rcpp::as<std::string>(list["check.str"]);
+
+			unsigned flags = 0;
+			Rcpp::StringVector flagVec;
+			if (list.containsElementNamed("flags")) {
+			    flagVec = list["flags"];
+			    for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+				std::string aflag = Rcpp::as<std::string>(*itr);
+				if (!aflag.compare("RP_SUFFIX"))
+				    flags = flags | Xapian::RP_SUFFIX;
+				else
+				    flags = flags | Xapian::RP_REPEATED;
+			    }
+			}
+			Xapian::RangeProcessor * str_proc = new Xapian::RangeProcessor(aVal, aStr, flags);
+			queryparser.add_rangeprocessor(str_proc);
+		    } else {
+			Xapian::RangeProcessor * str_proc = new Xapian::RangeProcessor(aVal);
+			queryparser.add_rangeprocessor(str_proc);
+		    }
+		}
+
+		//if dateRangeProcessor
+		if (!type.compare("proc.date")) {
+		    int aVal = list["value"];
+		    int epoch_year_ = 1970;
+		    if (list.containsElementNamed("epoch_year")) epoch_year_ = list["epoch_year"];
+
+		    unsigned flags = 0;
+		    Rcpp::StringVector flagVec;
+		    if (list.containsElementNamed("flags")) {
+			flagVec = list["flags"];
+			for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+			    std::string aflag = Rcpp::as<std::string>(*itr);
+			    if (!aflag.compare("RP_SUFFIX"))
+				flags = flags | Xapian::RP_SUFFIX;
+			    else if ((!aflag.compare("RP_REPEATED")))
+				flags = flags | Xapian::RP_REPEATED;
+			    else
+				flags = flags | Xapian::RP_DATE_PREFER_MDY;
+			}
+		    }
+
+		    if (list.containsElementNamed("check.str")) {
+			std::string aStr = Rcpp::as<std::string>(list["check.str"]);
+
+			Xapian::DateRangeProcessor * date_proc =
+			    new Xapian::DateRangeProcessor(aVal, aStr, flags, epoch_year_);
+			queryparser.add_rangeprocessor(date_proc);
+		    } else {
+			Xapian::DateRangeProcessor * date_proc =
+			    new Xapian::DateRangeProcessor(aVal, flags, epoch_year_);
+			queryparser.add_rangeprocessor(date_proc);
+		    }
+		}
+	    }
+	}
+
 	std::string aQuery = Rcpp::as<std::string>(query["queryString"]);
 	returnQuery = queryparser.parse_query(aQuery);
+	return returnQuery;
+    }
+
+    if (query.containsElementNamed("tname")) {
+	string term = Rcpp::as<std::string>(query["tname"]);
+	Xapian::termcount aWqf = 1;
+	Xapian::termpos aPos = 0;
+	if (query.containsElementNamed("wqf")) aWqf = Rcpp::as<int>(query["wqf"]);
+	if (query.containsElementNamed("pos")) aPos = Rcpp::as<int>(query["pos"]);
+	return Xapian::Query(term, aWqf, aPos);
+    }
+
+    if (query.containsElementNamed("OP")) {
+	Xapian::Query::op aOP;
+	string qOP = Rcpp::as<std::string>(query["OP"]);
+	if (qOP == "OP_AND")
+	    aOP = Xapian::Query::OP_AND;
+	else if (qOP == "OP_OR")
+	    aOP = Xapian::Query::OP_OR;
+	else if (qOP == "OP_AND_MAYBE")
+	    aOP = Xapian::Query::OP_AND_MAYBE;
+	else if (qOP == "OP_AND_NOT")
+	    aOP = Xapian::Query::OP_AND_NOT;
+	else if (qOP == "OP_ELITE_SET")
+	    aOP = Xapian::Query::OP_ELITE_SET;
+	else if (qOP == "OP_FILTER")
+	    aOP = Xapian::Query::OP_FILTER;
+	else if (qOP == "OP_MAX")
+	    aOP = Xapian::Query::OP_MAX;
+	else
+	    aOP = Xapian::Query::OP_NEAR;
+
+	if (query.containsElementNamed("left")) {
+	    string left = Rcpp::as<std::string>(query["left"]);
+	    string right = Rcpp::as<std::string>(query["right"]);
+	    return Xapian::Query(aOP, left, right);
+	}
+
+	if (query.containsElementNamed("queries")) {
+	    Rcpp::List queryL = query["queries"];
+	    std::vector<Xapian::Query> aList;
+	    for (Rcpp::List::iterator it = queryL.begin(); it != queryL.end(); ++it) {
+		Rcpp::List list = it.operator*();
+		aList.push_back(parseQuery(list));
+	    }
+	    return Xapian::Query(aOP, aList.begin(), aList.end());
+	}
+
+	if (query.containsElementNamed("query.left")) {
+	    Rcpp::List qLeft = query["query.left"];
+	    Rcpp::List qRight = query["query.right"];
+	    return Xapian::Query(aOP, parseQuery(qLeft), parseQuery(qRight));
+	}
+
+	if (query.containsElementNamed("slot")) {
+	    Xapian::valueno aSlot = Rcpp::as<int>(query["slot"]);
+
+	    if (query.containsElementNamed("begin")) {
+		string sBegin = Rcpp::as<std::string>(query["begin"]);
+		string sEnd = Rcpp::as<std::string>(query["end"]);
+		return Xapian::Query(aOP, aSlot, sBegin, sEnd);
+	    }
+
+	    if (query.containsElementNamed("value")) {
+		std::string aVal = Rcpp::as<std::string>(query["value"]);
+		return Xapian::Query(aOP, aSlot, aVal);
+	    }
+	}
     }
 
     return returnQuery;
@@ -165,7 +330,7 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
     Xapian::doccount checkatleast = 0;
 
     if (enquireList.containsElementNamed("first")) first = Rcpp::as<int>(enquireList["first"]);
-    if (enquireList.containsElementNamed("first")) maxitems = Rcpp::as<int>(enquireList["maxitems"]);
+    if (enquireList.containsElementNamed("maxitems")) maxitems = Rcpp::as<int>(enquireList["maxitems"]);
     if (enquireList.containsElementNamed("checkatleast")) checkatleast = Rcpp::as<int>(enquireList["checkatleast"]);
 
     // Create and return a data.frame with results for the searched query
