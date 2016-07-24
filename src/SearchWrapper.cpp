@@ -98,7 +98,7 @@ parseQuery(Rcpp::List & query)
 	    }
 	}
 
-	//check for RangeProcessors
+	// check for RangeProcessors
 	if (query.containsElementNamed("VRP")) {
 	    Rcpp::List processors = query["VRP"];
 
@@ -106,7 +106,7 @@ parseQuery(Rcpp::List & query)
 		Rcpp::List list = *it;
 		string type = Rcpp::as<std::string>(list["type"]);
 
-		//if NumberRangeProcessor
+		// if NumberRangeProcessor
 		if (!type.compare("proc.num")) {
 		    int aVal = list["value"];
 
@@ -133,7 +133,7 @@ parseQuery(Rcpp::List & query)
 		    }
 		}
 
-		//if RangeProcessor
+		// if RangeProcessor
 		if (!type.compare("proc.str")) {
 		    int aVal = list["value"];
 		    if (list.containsElementNamed("check.str")) {
@@ -159,7 +159,7 @@ parseQuery(Rcpp::List & query)
 		    }
 		}
 
-		//if dateRangeProcessor
+		// if dateRangeProcessor
 		if (!type.compare("proc.date")) {
 		    int aVal = list["value"];
 		    int epoch_year_ = 1970;
@@ -273,10 +273,13 @@ parseQuery(Rcpp::List & query)
 std::vector<Xapian::ValueCountMatchSpy *>
 parseSpy(Xapian::Enquire enquire, Rcpp::NumericVector & spy)
 {
-    std::vector<Xapian::ValueCountMatchSpy *> aList;
+    std::vector<Xapian::ValueCountMatchSpy *> aList; // This should be a list of
+    // lists-> caz there could be
+    // multiple facets
+
     for (Rcpp::NumericVector::iterator itr = spy.begin(); itr != spy.end(); ++itr) {
-	Xapian::ValueCountMatchSpy * aSpy = new Xapian::ValueCountMatchSpy(*itr);
-	Rcpp::Rcout << *itr << std::endl;
+	int slot = *itr;
+	Xapian::ValueCountMatchSpy * aSpy = new Xapian::ValueCountMatchSpy(slot);
 	enquire.add_matchspy(aSpy);
 	aList.push_back(aSpy);
     }
@@ -318,9 +321,12 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
 
     // Set up a spy to inspect a particular value at specified slot
     std::vector<Xapian::ValueCountMatchSpy *> spy;
-    if (enquireList.containsElementNamed("matchspy")) {
-	Rcpp::NumericVector spyVec = enquireList["matchspy"];
+    bool returnSpy = false;
+    Rcpp::NumericVector spyVec;
+    if (enquireList.containsElementNamed("return.spy")) {
+	spyVec = enquireList["return.spy"];
 	spy = parseSpy(enquire, spyVec);
+	returnSpy = true;
     }
 
     // first- defines starting point within result set
@@ -355,21 +361,33 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
 	    output[str] = rowVec;
 	}
 
-	bool displaySpies = true;
-	if (enquireList.containsElementNamed("viewSpies")) displaySpies = Rcpp::as<bool>(enquireList["viewSpies"]);
+	Rcpp::List out = convertToDataFrame(output);
 
-	if (displaySpies) {
-	    // Fetch and display the spy values
+	if (returnSpy) {
+	    Rcpp::List outputSpy;
+	    int spyNo = 0;
 	    for (std::vector<Xapian::ValueCountMatchSpy *>::iterator itr = spy.begin(); itr != spy.end(); ++itr) {
-		Rcpp::Rcout << "new spy" << std::endl;
 		Xapian::ValueCountMatchSpy * aSpy = *itr;
+		std::string aStr;
+		Rcpp::List spyList;
 		for (Xapian::TermIterator facet = aSpy->values_begin(); facet != aSpy->values_end(); ++facet) {
-		    Rcpp::Rcout << "Facet: " << *facet << "; count: " << facet.get_termfreq() << std::endl;
+		    aStr = *facet + "; count: ";
+		    int termFreq = facet.get_termfreq();
+		    stringstream convert;
+		    convert << termFreq;
+		    aStr += convert.str();
+		    spyList.push_back(aStr);
 		}
+		double spyIndex = spyVec[spyNo++];
+		stringstream ss;
+		ss << spyIndex;
+		string str = ss.str();
+		outputSpy[str] = spyList;
 	    }
-	}
+	    return Rcpp::List::create(Rcpp::Named("output") = out, Rcpp::Named("spies") = outputSpy);
+	} else
+	    return out;
 
-	return convertToDataFrame(output);
     } else
 	return NULL;
 }
