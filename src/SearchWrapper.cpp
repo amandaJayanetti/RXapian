@@ -286,6 +286,83 @@ parseSpy(Xapian::Enquire enquire, Rcpp::NumericVector & spy)
     return aList;
 }
 
+void
+parseEnquire(Xapian::Enquire enquire, Rcpp::List & enquireList)
+{
+  if(enquireList.containsElementNamed("weighting_scheme")){
+    std::string scheme=Rcpp::as<std::string>(enquireList["weighting_scheme"]);
+    Xapian::Registry *reg=new Xapian::Registry();
+    const Xapian::Weight *weight=reg->get_weighting_scheme(scheme);
+    enquire.set_weighting_scheme(*weight);
+  }
+
+    if (enquireList.containsElementNamed("docid_order")) {
+	std::string order = Rcpp::as<std::string>(enquireList["docid_order"]);
+	if (!order.compare("ASCENDING"))
+	    enquire.set_docid_order(Xapian::Enquire::ASCENDING);
+	else if (!order.compare("DESCENDING"))
+	    enquire.set_docid_order(Xapian::Enquire::DESCENDING);
+	else
+	    enquire.set_docid_order(Xapian::Enquire::DONT_CARE);
+    }
+
+    if (enquireList.containsElementNamed("sortby")) {
+	std::string sortby = Rcpp::as<std::string>(enquireList["sortby"]);
+
+	if (!sortby.compare("relevance")) {
+	    enquire.set_sort_by_relevance();
+	} else {
+	    bool reverse_sort_order;
+	    try {
+		reverse_sort_order = Rcpp::as<bool>(enquireList["reverse_sort_order"]);
+	    } catch (...) {
+		Rcpp::stop("reverse_sort_order parameter is not set or is invalid");
+	    }
+
+	    if (enquireList.containsElementNamed("keyMaker")) {
+
+		Xapian::MultiValueKeyMaker * keyMaker = new Xapian::MultiValueKeyMaker();
+		Rcpp::List keyList = enquireList["keyMaker"];
+
+		for (Rcpp::List::iterator it = keyList.begin(); it != keyList.end(); ++it) {
+
+		    Rcpp::List list = *it;
+		    int slot;
+
+		    try {
+			slot = Rcpp::as<int>(list["slot"]);
+		    } catch (...) {
+			Rcpp::stop("slot parameter is not set or is invalid");
+		    }
+
+		    bool reverse = false;
+
+		    if (list.containsElementNamed("reverse")) reverse = Rcpp::as<bool>(list["reverse"]);
+
+		    keyMaker->add_value(slot, reverse);
+		}
+
+		if (!sortby.compare("key"))
+		    enquire.set_sort_by_key(keyMaker, reverse_sort_order);
+		else if (!sortby.compare("relevance_then_key"))
+		    enquire.set_sort_by_relevance_then_key(keyMaker, reverse_sort_order);
+		else if (!sortby.compare("key_then_relevance"))
+		    enquire.set_sort_by_key_then_relevance(keyMaker, reverse_sort_order);
+
+	    } else if (enquireList.containsElementNamed("valueNo")) {
+		int valueNo = Rcpp::as<int>(enquireList["valueNo"]);
+
+		if (!sortby.compare("value"))
+		    enquire.set_sort_by_value(valueNo, reverse_sort_order);
+		else if (!sortby.compare("relevance_then_value"))
+		    enquire.set_sort_by_relevance_then_value(valueNo, reverse_sort_order);
+		else if (!sortby.compare("value_then_relevance"))
+		    enquire.set_sort_by_value_then_relevance(valueNo, reverse_sort_order);
+	    }
+	}
+    }
+}
+
 //' Search wrapper
 //'
 //' @param dbpath	path to a Xapian database
@@ -328,6 +405,8 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
 	spy = parseSpy(enquire, spyVec);
 	returnSpy = true;
     }
+    
+    parseEnquire(enquire,enquireList);
 
     // first- defines starting point within result set
     // pagesize - defines number of records to retrieve
