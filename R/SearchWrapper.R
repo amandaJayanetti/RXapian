@@ -2,6 +2,7 @@
 #'
 #' @param dbpath	path to a Xapian database
 #' @param queryList a list 
+#' @param enquireList list of arguments for Xapian::Enquire
 #' @examples
 #' \dontrun{
 #' 

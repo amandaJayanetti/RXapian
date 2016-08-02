@@ -112,7 +112,7 @@ parseField(const string & field, const char & separator)
 //' @param indexFields	list of 'list of fields' that will be indexed using a Xapian::TermGenerator
 //' @param filterFields	list with information on boolean terms to be added to Xapian::Document
 //' @param stemmer 	the stemmer that should be applied to the Xapian::TermGenerator
-//'
+//' @param valueSlots list of arguments required for advanced indexing
 //' @examples
 //' \dontrun{
 //' db<- c("path/to/database")
