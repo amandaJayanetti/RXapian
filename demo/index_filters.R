@@ -15,9 +15,18 @@ db<- tempfile(pattern="RXapianEx-")
 # row value of this column will be used as a unique identifier to each document(row)
 id<-c(0)
 
-indexFields<-list(list(name="TITLE",prefix="S"))
+indexFields<-list(list(name="TITLE",prefix="S"),
+                  list(name="DESCRIPTION",PREFIX="XD"))
 
 # this argument is required to facilitate 'filtering documents' at search time
 filterFields<-list(list(name="MATERIALS",prefix="XM",separator=";"))
 
-xapian_index(db,data,id,indexFields,filterFields,"en")
+xapian_index(dbpath = db,
+             dataFrame = data,
+             idColumn = id,
+             indexFields = indexFields,
+             filterFields = filterFields,
+             stemmer = "en")
+
+
+

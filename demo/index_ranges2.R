@@ -2,7 +2,7 @@
 
 library(RXapian)
 
-db<-c("path/to/db")
+db<- tempfile(pattern="RXapianEx-")
 
 # preparing arguments for xapian_index()
 dataFile <- system.file("sampleData/states.csv", package="RXapian")
@@ -44,6 +44,10 @@ vs1<-list(slot=c(1),serialise=TRUE,values=vec,type=c("double"))
 vs2<-list(slot=c(3),serialise=TRUE,values=popVec,type=c("double"))
 
 valueS<-list(vs1,vs2)
+
+indexFields<-list(list(name="name",prefix="S"),
+                  list(name="description",prefix="XD"),
+                  list(name="motto",prefix="XM"))
 
 xapian_index(dbpath = db,
              dataFrame = data,
