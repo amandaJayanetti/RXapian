@@ -77,7 +77,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // value_lower_bound
-Rcpp::NumericVector value_lower_bound(SEXP dbpath, SEXP slot);
+Rcpp::StringVector value_lower_bound(SEXP dbpath, SEXP slot);
 RcppExport SEXP RXapian_value_lower_bound(SEXP dbpathSEXP, SEXP slotSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
@@ -89,7 +89,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // value_upper_bound
-Rcpp::NumericVector value_upper_bound(SEXP dbpath, SEXP slot);
+Rcpp::StringVector value_upper_bound(SEXP dbpath, SEXP slot);
 RcppExport SEXP RXapian_value_upper_bound(SEXP dbpathSEXP, SEXP slotSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
@@ -177,9 +177,20 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// deleteWrapper
+void deleteWrapper(SEXP dbpath, SEXP docid);
+RcppExport SEXP RXapian_deleteWrapper(SEXP dbpathSEXP, SEXP docidSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< SEXP >::type dbpath(dbpathSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type docid(docidSEXP);
+    deleteWrapper(dbpath, docid);
+    return R_NilValue;
+END_RCPP
+}
 // indexWrapper
-void indexWrapper(Rcpp::CharacterVector& dbpath, Rcpp::DataFrame& dataFrame, Rcpp::NumericVector& idColumn, Rcpp::List& indexFields, Rcpp::List& filterFields, Rcpp::CharacterVector& stemmer);
-RcppExport SEXP RXapian_indexWrapper(SEXP dbpathSEXP, SEXP dataFrameSEXP, SEXP idColumnSEXP, SEXP indexFieldsSEXP, SEXP filterFieldsSEXP, SEXP stemmerSEXP) {
+void indexWrapper(Rcpp::CharacterVector& dbpath, Rcpp::DataFrame& dataFrame, Rcpp::NumericVector& idColumn, Rcpp::List& indexFields, Rcpp::List& filterFields, Rcpp::List& valueSlots, Rcpp::CharacterVector& stemmer);
+RcppExport SEXP RXapian_indexWrapper(SEXP dbpathSEXP, SEXP dataFrameSEXP, SEXP idColumnSEXP, SEXP indexFieldsSEXP, SEXP filterFieldsSEXP, SEXP valueSlotsSEXP, SEXP stemmerSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::CharacterVector& >::type dbpath(dbpathSEXP);
@@ -187,20 +198,22 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type idColumn(idColumnSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type indexFields(indexFieldsSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type filterFields(filterFieldsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type valueSlots(valueSlotsSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector& >::type stemmer(stemmerSEXP);
-    indexWrapper(dbpath, dataFrame, idColumn, indexFields, filterFields, stemmer);
+    indexWrapper(dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer);
     return R_NilValue;
 END_RCPP
 }
 // searchWrapper
-Rcpp::List searchWrapper(Rcpp::CharacterVector& dbpath, Rcpp::List& queryList);
-RcppExport SEXP RXapian_searchWrapper(SEXP dbpathSEXP, SEXP queryListSEXP) {
+Rcpp::List searchWrapper(Rcpp::CharacterVector& dbpath, Rcpp::List& enquireList, Rcpp::List& queryList);
+RcppExport SEXP RXapian_searchWrapper(SEXP dbpathSEXP, SEXP enquireListSEXP, SEXP queryListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::CharacterVector& >::type dbpath(dbpathSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type enquireList(enquireListSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type queryList(queryListSEXP);
-    __result = Rcpp::wrap(searchWrapper(dbpath, queryList));
+    __result = Rcpp::wrap(searchWrapper(dbpath, enquireList, queryList));
     return __result;
 END_RCPP
 }
