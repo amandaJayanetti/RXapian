@@ -38,7 +38,7 @@ test_that("search results are as expected", {
   
   # searching a xapian database with xapian_search()
   
-  result <-xapian_search(db,queryList)
+  result <-xapian_search(dbpath=db, queryList= queryList)
   
   # comparing results 
   
