@@ -367,7 +367,7 @@ parseEnquire(Xapian::Enquire enquire, Rcpp::List & enquireList)
 //'
 //' @param dbpath	path to a Xapian database
 //' @param queryList    a list of data to create a Xapian::Query
-//'
+//' @param enquireList list of arguments for Xapian::Enquire
 //' @examples
 //' \dontrun{
 //' db<- c("path/to/database")
