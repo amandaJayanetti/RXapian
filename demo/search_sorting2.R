@@ -10,7 +10,7 @@ keyMaker=list(list(slot=1,reverse=FALSE),list(slot=3,reverse=TRUE))
 
 enq<-list(sortby="key_then_relevance",keyMaker=keyMaker,reverse_sort_order=FALSE)
 
-preF<-list(list(name="name", prefix="S"),
+preF<-list(list(name="title", prefix="S"),
            list(name="description", prefix="XD"))
 
 query<-list(queryString="State", stemmer="en", prefix.fields=preF)

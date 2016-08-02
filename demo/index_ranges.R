@@ -12,8 +12,8 @@ dateCol<-data$DATE_MADE
 dateVec<-as.double(gsub("([0-9]+).*$", "\\1",dateCol))
 
 # extract and modify Measurements column of data frame
-library(stringi)
-m<-data$Measurements
+library(stringr)
+m <- data$MEASUREMENTS
 y <- str_extract_all(m ,"\\(?[0-9.]+\\)?")
 mVec<-c()
 for(element in y){
@@ -21,11 +21,11 @@ for(element in y){
     mVec<-append(mVec,NA)
   else{
     ele<-as.double(element)
-    mVec<-append(vec,round(max(ele)))
+    mVec<-append(mVec,round(max(ele)))
   }
 }
 
-db<-c("path/to/db")
+db<- tempfile(pattern="RXapianEx-")
 
 # row value of this column will be used as a unique identifier to each document(row)
 id<-c(0)
