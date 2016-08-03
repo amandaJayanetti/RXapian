@@ -1,11 +1,11 @@
 Package: RXapian
 Type: Package
-Title: R bindings for Xapian search engine library
+Title: R Bindings for Xapian Search Engine Library
 Version: 1.0
-Date: 2016-04-25
+Date: 2016-08-03
 Author: Amanda Jayanetti
 Maintainer: Amanda Jayanetti <amandajayanetti@gmail.com>
-Description: This package provides an interface which facilitates convenient access to advanced indexing and retrieval operations offered by Xapian search engine library. For further information see http://getting-started-with-xapian.readthedocs.io/en/latest/index.html.
+Description: An R interface to Xapian search engine library. For further information see http://getting-started-with-xapian.readthedocs.io/en/latest/index.html.
 License: GPL (>= 2)
 Imports:
     Rcpp (>= 0.12.4),
