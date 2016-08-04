@@ -1695,6 +1695,7 @@ done
   done
 IFS=$as_save_IFS
 
+  test -z "$ac_cv_path_XAPIAN_CONFIG" && ac_cv_path_XAPIAN_CONFIG="xapian-config"
   ;;
 esac
 fi
