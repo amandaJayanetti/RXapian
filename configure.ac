@@ -3,7 +3,7 @@ AC_INIT([testPkg], 1.0)
 ## Use xapian-config-1.3 to find arguments for compiler and linker flags
 ##
 ## Check for non-standard programs: xapian-config-1.3
-AC_PATH_PROG([XAPIAN_CONFIG], [xapian-config-1.3])
+AC_PATH_PROG([XAPIAN_CONFIG], [xapian-config-1.3], [xapian-config])
 ## If xapian-config-1.3 was found, let's use it
 if test "${XAPIAN_CONFIG}" != ""; then
     # Use gsl-config for header and linker arguments
