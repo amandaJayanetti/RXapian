@@ -1,0 +1,10 @@
+index		simple indexing demo
+index_facets	storing document values to use in facets demo
+index_filters   indexing content for filtering search results demo
+index_ranges    indexing content to fascilitate range queries demo
+index_ranges2   indexing content to fascilitate range queries demo
+search_facets   faceted search demo
+search_filters  filtering search results demo
+search_ranges   range queries demo
+search_sorting  sorting search results demo
+search_sorting2 sorting search results demo
