@@ -5,12 +5,12 @@
 \title{indexing wrapper}
 \usage{
 xapian_index(dbpath, dataFrame, idColumn = NULL, indexFields = NULL,
-  filterFields = NULL, stemmer = c("english", "en", "danish", "da", "dutch",
-  "nl", "english_lovins", "lovins", "english_porter", "porter", "finnish", "fi",
-  "french", "fr", "german", "de", "german2", "hungarian", "hu", "italian", "it",
-  "kraaij_pohlmann", "norwegian", "nb", "nn", "no", "portuguese", "pt",
-  "romanian", "ro", "russian", "ru", "spanish", "es", "swedish", "sv",
-  "turkish", "tr"))
+  filterFields = NULL, valueSlots = NULL, stemmer = c("english", "en",
+  "danish", "da", "dutch", "nl", "english_lovins", "lovins", "english_porter",
+  "porter", "finnish", "fi", "french", "fr", "german", "de", "german2",
+  "hungarian", "hu", "italian", "it", "kraaij_pohlmann", "norwegian", "nb",
+  "nn", "no", "portuguese", "pt", "romanian", "ro", "russian", "ru", "spanish",
+  "es", "swedish", "sv", "turkish", "tr"))
 }
 \arguments{
 \item{dbpath}{path to a Xapian database}
@@ -22,6 +22,8 @@ xapian_index(dbpath, dataFrame, idColumn = NULL, indexFields = NULL,
 \item{indexFields}{list of 'list of fields' that will be indexed using a Xapian::TermGenerator}
 
 \item{filterFields}{list with information on boolean terms to be added to Xapian::Document}
+
+\item{valueSlots}{list of arguments required for advanced indexing}
 
 \item{stemmer}{the stemmer that should be applied to the Xapian::TermGenerator}
 }

@@ -2,21 +2,21 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' DatabaseInfo wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' databaseInfo(dbpath)
 #' }
-#' 
+#'
 #' @return list of information about the Xapian database at specified location
 databaseInfo <- function(dbpath) {
     .Call('RXapian_databaseInfo', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database setmetadata wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param key    key of the metadata item to set
 #' @param value  value of the metadata item to set
@@ -27,14 +27,14 @@ databaseInfo <- function(dbpath) {
 #' value<-c("v1")
 #' setmetadata(dbpath,key,value)
 #' }
-#' 
+#'
 #' @return none
 setmetadata <- function(dbpath, key, value) {
     invisible(.Call('RXapian_setmetadata', PACKAGE = 'RXapian', dbpath, key, value))
 }
 
 #' Database getmetadata wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param key    key of the metadata item to access
 #' @examples
@@ -43,14 +43,14 @@ setmetadata <- function(dbpath, key, value) {
 #' key<-c("k1")
 #' getmetadata(dbpath,key)
 #' }
-#' 
+#'
 #' @return user-specified metadata associated with the given key
 getmetadata <- function(dbpath, key) {
     .Call('RXapian_getmetadata', PACKAGE = 'RXapian', dbpath, key)
 }
 
 #' Database spelling_suggestion wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param arg    potentially misspelled word
 #' @examples
@@ -59,14 +59,14 @@ getmetadata <- function(dbpath, key) {
 #'  arg<-list(word="helllo", max_edit_distance = 3)
 #'  spelling_suggestion(dbpath,arg)
 #' }
-#' 
+#'
 #' @return a spelling correction to a potentially misspelled word
 spelling_suggestion <- function(dbpath, arg) {
     .Call('RXapian_spelling_suggestion', PACKAGE = 'RXapian', dbpath, arg)
 }
 
 #' Database collection_freq wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param tname  term whose collection frequency is being requested
 #' @examples
@@ -75,14 +75,14 @@ spelling_suggestion <- function(dbpath, arg) {
 #' tname<-c("test")
 #' collection_freq(dbpath,tname)
 #' }
-#' 
+#'
 #' @return total number of occurrences of the given term
 collection_freq <- function(dbpath, tname) {
     .Call('RXapian_collection_freq', PACKAGE = 'RXapian', dbpath, tname)
 }
 
 #' Database value_freq wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param slot   value slot to examine
 #' @examples
@@ -91,14 +91,14 @@ collection_freq <- function(dbpath, tname) {
 #' slot<-c(1)
 #' value_freq(dbpath,slot)
 #' }
-#' 
+#'
 #' @return frequency of the given value slot
 value_freq <- function(dbpath, slot) {
     .Call('RXapian_value_freq', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database value_lower_bound wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param slot   value slot to examine
 #' @examples
@@ -107,14 +107,14 @@ value_freq <- function(dbpath, slot) {
 #' slot<-c(1)
 #' value_lower_bound(dbpath,slot)
 #' }
-#' 
+#'
 #' @return  a lower bound on the values stored in the given value slot
 value_lower_bound <- function(dbpath, slot) {
     .Call('RXapian_value_lower_bound', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database value_upper_bound wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @param slot   value slot to examine
 #' @examples
@@ -123,105 +123,105 @@ value_lower_bound <- function(dbpath, slot) {
 #' slot<-c(1)
 #' value_upper_bound(dbpath,slot)
 #' }
-#' 
+#'
 #' @return an upper bound on the values stored in the given value slot
 value_upper_bound <- function(dbpath, slot) {
     .Call('RXapian_value_upper_bound', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database uuid wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' uuid(dbpath)
 #' }
-#' 
+#'
 #' @return a UUID for the database
 uuid <- function(dbpath) {
     .Call('RXapian_uuid', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doccount wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' doccount(dbpath)
 #' }
-#' 
+#'
 #' @return number of documents in the database
 doccount <- function(dbpath) {
     .Call('RXapian_doccount', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database avlength wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' avlength(dbpath)
 #' }
-#' 
+#'
 #' @return average length of the documents in the database
 avlength <- function(dbpath) {
     .Call('RXapian_avlength', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doclength_lower_bound wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' doclength_lower_bound(dbpath)
 #' }
-#' 
+#'
 #' @return a lower bound on the length of a document in the database
 doclength_lower_bound <- function(dbpath) {
     .Call('RXapian_doclength_lower_bound', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doclength_upper_bound wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' doclength_upper_bound(dbpath)
 #' }
-#' 
+#'
 #' @return an upper bound on the length of a document in the database
 doclength_upper_bound <- function(dbpath) {
     .Call('RXapian_doclength_upper_bound', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database lastdocid wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' lastdocid(dbpath)
 #' }
-#' 
+#'
 #' @return highest document id which has been used in the database
 lastdocid <- function(dbpath) {
     .Call('RXapian_lastdocid', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database has_positions wrapper
-#' 
+#'
 #' @param dbpath path to a Xapian Database
 #' @examples
 #' \dontrun{
 #' dbpath<- c("path/to/database")
 #' has_positions(dbpath)
 #' }
-#' 
+#'
 #' @return whether this database has any positional information
 has_positions <- function(dbpath) {
     .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
@@ -235,7 +235,7 @@ has_positions <- function(dbpath) {
 #' @param indexFields	list of 'list of fields' that will be indexed using a Xapian::TermGenerator
 #' @param filterFields	list with information on boolean terms to be added to Xapian::Document
 #' @param stemmer 	the stemmer that should be applied to the Xapian::TermGenerator
-#' 
+#' @param valueSlots list of arguments required for advanced indexing
 #' @examples
 #' \dontrun{
 #' db<- c("path/to/database")
@@ -245,17 +245,17 @@ has_positions <- function(dbpath) {
 #' filterFields<-list(list(index=6,prefix="XM",separator=";"))
 #' indexWrapper(db,data,id,indexFields,filterFields,"en")
 #' }
-#' 
+#'
 #' @return none
-indexWrapper <- function(dbpath, dataFrame, idColumn, indexFields, filterFields, stemmer) {
-    invisible(.Call('RXapian_indexWrapper', PACKAGE = 'RXapian', dbpath, dataFrame, idColumn, indexFields, filterFields, stemmer))
+indexWrapper <- function(dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer) {
+    invisible(.Call('RXapian_indexWrapper', PACKAGE = 'RXapian', dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer))
 }
 
 #' Search wrapper
 #'
 #' @param dbpath	path to a Xapian database
-#' @param queryList    a list of data to create a Xapian::Query 
-#' 
+#' @param queryList    a list of data to create a Xapian::Query
+#' @param enquireList list of arguments for Xapian::Enquire
 #' @examples
 #' \dontrun{
 #' db<- c("path/to/database")
@@ -263,11 +263,12 @@ indexWrapper <- function(dbpath, dataFrame, idColumn, indexFields, filterFields,
 #'             prefix.fields=list(list(prefix="S",name="title"),
 #'                           list(prefix="XD",name="description")),
 #'             stemmer="en")
-#' searchWrapper(db,query)
+#' enq<-list(matchspy=c(0,1))
+#' searchWrapper(db,enq,query)
 #' }
-#' 
-#' @return 
-searchWrapper <- function(dbpath, queryList) {
-    .Call('RXapian_searchWrapper', PACKAGE = 'RXapian', dbpath, queryList)
+#'
+#' @return
+searchWrapper <- function(dbpath, enquireList, queryList) {
+    .Call('RXapian_searchWrapper', PACKAGE = 'RXapian', dbpath, enquireList, queryList)
 }
 

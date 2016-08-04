@@ -6,6 +6,7 @@
 #' @param indexFields	list of 'list of fields' that will be indexed using a Xapian::TermGenerator
 #' @param filterFields	list with information on boolean terms to be added to Xapian::Document
 #' @param stemmer 	the stemmer that should be applied to the Xapian::TermGenerator
+#' @param valueSlots list of arguments required for advanced indexing
 #' @examples
 #' \dontrun{
 #' 
@@ -24,6 +25,7 @@ xapian_index <- function(dbpath,
                          idColumn=NULL,
                          indexFields=NULL, 
                          filterFields=NULL, 
+                         valueSlots=NULL,
                          stemmer = c(
                            "english", "en",
                            "danish", "da",
@@ -51,7 +53,9 @@ xapian_index <- function(dbpath,
   checkmate::assertList(indexFields)
   if(!is.null(filterFields))
     checkmate::assertList(filterFields)
+  if(!is.null(valueSlots))
+    checkmate::assertList(valueSlots)
   stemmer <- match.arg(stemmer)
   
-  indexWrapper(dbpath,dataFrame,idColumn,indexFields,filterFields,stemmer);
+  indexWrapper(dbpath,dataFrame,idColumn,indexFields,filterFields,valueSlots,stemmer);
 }
