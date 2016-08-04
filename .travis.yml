@@ -1,4 +1,8 @@
 
 language: R
-sudo: false
+dist: trusty
+sudo: required
 cache: packages
+before_install:
+  - sudo apt-get install libxapian-dev
+
