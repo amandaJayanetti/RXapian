@@ -1,3 +1,4 @@
+#include "config.h"
 #include <Rcpp.h>
 #include <cstdlib>
 #include <fstream>
@@ -98,6 +99,8 @@ parseQuery(Rcpp::List & query)
 	    }
 	}
 
+#if defined(XAPIAN_RANGE_PROCESSOR_SUPPORT)
+
 	// check for RangeProcessors
 	if (query.containsElementNamed("VRP")) {
 	    Rcpp::List processors = query["VRP"];
@@ -195,6 +198,8 @@ parseQuery(Rcpp::List & query)
 	    }
 	}
 
+#endif
+
 	std::string aQuery = Rcpp::as<std::string>(query["queryString"]);
 	returnQuery = queryparser.parse_query(aQuery);
 	return returnQuery;
@@ -224,8 +229,10 @@ parseQuery(Rcpp::List & query)
 	    aOP = Xapian::Query::OP_ELITE_SET;
 	else if (qOP == "OP_FILTER")
 	    aOP = Xapian::Query::OP_FILTER;
+#if defined(XAPIAN_RANGE_PROCESSOR_SUPPORT)
 	else if (qOP == "OP_MAX")
 	    aOP = Xapian::Query::OP_MAX;
+#endif
 	else
 	    aOP = Xapian::Query::OP_NEAR;
 
@@ -470,3 +477,4 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
     } else
 	return NULL;
 }
+
