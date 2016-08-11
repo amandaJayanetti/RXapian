@@ -322,7 +322,7 @@ parseQuery(Rcpp::List & query)
 	    aOP = Xapian::Query::OP_ELITE_SET;
 	else if (qOP == "OP_FILTER")
 	    aOP = Xapian::Query::OP_FILTER;
-#if defined(XAPIAN_RANGE_PROCESSOR_SUPPORT)
+#if defined(XAPIAN_OP_MAX_SUPPORT)
 	else if (qOP == "OP_MAX")
 	    aOP = Xapian::Query::OP_MAX;
 #endif
