@@ -389,3 +389,23 @@ void deleteWrapper(SEXP dbpath, SEXP docid){
   Xapian::docid id=Rcpp::as<int>(docid);
   db.delete_document(id);
 }
+
+//' xapian_delete_by_term wrapper
+//' 
+//' @param dbpath path to a Xapian Database
+//' @param unique_term The term to remove references to
+//' @examples
+//' \dontrun{
+//' dbpath<- c("path/to/database")
+//' term <- "hello"
+//' deleteByTermWrapper(dbpath,term)
+//' }
+//' 
+//' @return none
+// [[Rcpp::export]]
+void deleteByTermWrapper(SEXP dbpath, SEXP unique_term){
+  std::string path=Rcpp::as<std::string>(dbpath);
+  Xapian::WritableDatabase db(path, Xapian::DB_OPEN);
+  std::string term=Rcpp::as<std::string>(unique_term);
+  db.delete_document(term);
+}

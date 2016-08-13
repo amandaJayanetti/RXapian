@@ -273,3 +273,22 @@ xapian_delete<-function(dbpath,
   checkmate::assertNumber(docid)
   deleteWrapper(dbpath,docid)
 }
+
+#' xapian_delete_by_term 
+#'
+#' @param dbpath path to a Xapian database
+#' @param unique_term The term to remove references to
+#' @examples
+#' \dontrun{
+#' db<- c("path/to/database")
+#' term <- "hello"
+#' xapian_delete_by_term(dbpath,term)
+#' }
+#' @return none
+#' @export
+xapian_delete_by_term<-function(dbpath,
+                                unique_term){
+  checkmate::assertCharacter(dbpath)
+  checkmate::assertCharacter(unique_term)
+  deleteByTermWrapper(dbpath,unique_term)
+}
