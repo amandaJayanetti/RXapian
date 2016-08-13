@@ -227,6 +227,38 @@ has_positions <- function(dbpath) {
     .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
 }
 
+#' xapian_delete wrapper
+#' 
+#' @param dbpath path to a Xapian Database
+#' @param docid the document ID of the document to be removed
+#' @examples
+#' \dontrun{
+#' dbpath<- c("path/to/database")
+#' docid <- 20
+#' deleteWrapper(dbpath,docid)
+#' }
+#' 
+#' @return none
+deleteWrapper <- function(dbpath, docid) {
+    invisible(.Call('RXapian_deleteWrapper', PACKAGE = 'RXapian', dbpath, docid))
+}
+
+#' xapian_delete_by_term wrapper
+#' 
+#' @param dbpath path to a Xapian Database
+#' @param unique_term The term to remove references to
+#' @examples
+#' \dontrun{
+#' dbpath<- c("path/to/database")
+#' term <- "hello"
+#' deleteByTermWrapper(dbpath,term)
+#' }
+#' 
+#' @return none
+deleteByTermWrapper <- function(dbpath, unique_term) {
+    invisible(.Call('RXapian_deleteByTermWrapper', PACKAGE = 'RXapian', dbpath, unique_term))
+}
+
 #' indexing wrapper
 #'
 #' @param dbpath	path to a Xapian database
