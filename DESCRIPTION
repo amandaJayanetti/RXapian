@@ -9,7 +9,8 @@ Description: An R interface to Xapian search engine library. For further informa
 License: GPL (>= 2)
 Imports:
     Rcpp (>= 0.12.4),
-    checkmate (>= 1.5.1)
+    checkmate (>= 1.5.1),
+    stringr (>= 1.0.0)
 Suggests:
     testthat
 LinkingTo: Rcpp

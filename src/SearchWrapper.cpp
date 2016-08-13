@@ -1,3 +1,4 @@
+#include "config.h"
 #include <Rcpp.h>
 #include <cstdlib>
 #include <fstream>
@@ -98,6 +99,8 @@ parseQuery(Rcpp::List & query)
 	    }
 	}
 
+#if defined(XAPIAN_RANGE_PROCESSOR_SUPPORT)
+
 	// check for RangeProcessors
 	if (query.containsElementNamed("VRP")) {
 	    Rcpp::List processors = query["VRP"];
@@ -194,7 +197,102 @@ parseQuery(Rcpp::List & query)
 		}
 	    }
 	}
-
+      
+#else
+      
+      //check for valueRangeProcessors
+      if(query.containsElementNamed("VRP")){ 
+        Rcpp::List processors=query["VRP"];
+        
+        for( Rcpp::List::iterator it = processors.begin(); it != processors.end(); ++it ) {
+          Rcpp::List list=it.operator*();
+          string type=Rcpp::as<std::string>(list["type"]);
+          
+          if(!type.compare("proc.num")){ 
+            int aVal=list["value"];
+            if(list.containsElementNamed("check.str")){
+              string aStr=Rcpp::as<std::string>(list["check.str"]);
+              
+              bool aPrefix=true;
+              
+              Rcpp::StringVector flagVec;
+              if (list.containsElementNamed("flags")) {
+                flagVec = list["flags"];
+                for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+                  std::string aflag = Rcpp::as<std::string>(*itr);
+                  if (!aflag.compare("RP_SUFFIX")) 
+                        aPrefix=false;
+                }
+              }
+              
+              Xapian::NumberValueRangeProcessor *num_proc=new Xapian::NumberValueRangeProcessor(aVal,aStr,aPrefix);
+              queryparser.add_valuerangeprocessor(num_proc);
+            }
+            else{
+              Xapian::NumberValueRangeProcessor *num_proc=new Xapian::NumberValueRangeProcessor(aVal);
+              queryparser.add_valuerangeprocessor(num_proc);
+            }
+          }
+          if(!type.compare("proc.str")){
+            int aVal=list["value"];
+            if(list.containsElementNamed("check.str")){
+              string aStr=Rcpp::as<std::string>(list["check.str"]);
+              bool aPrefix=true;
+              
+              Rcpp::StringVector flagVec;
+              if (list.containsElementNamed("flags")) {
+                flagVec = list["flags"];
+                for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+                  std::string aflag = Rcpp::as<std::string>(*itr);
+                  if (!aflag.compare("RP_SUFFIX")) 
+                    aPrefix=false;
+                }
+              }
+              
+              Xapian::StringValueRangeProcessor *str_proc=new Xapian::StringValueRangeProcessor(aVal,aStr,aPrefix);
+              queryparser.add_valuerangeprocessor(str_proc);
+            }
+            else{
+              Xapian::StringValueRangeProcessor *str_proc=new Xapian::StringValueRangeProcessor(aVal);
+              queryparser.add_valuerangeprocessor(str_proc);
+            }
+          }
+          if(!type.compare("proc.date")){
+            int aVal=list["value"];
+            bool prefer_mdy_=false;
+            int epoch_year_ = 1970;
+            bool aPrefix=true;
+            
+            if(list.containsElementNamed("epoch_year"))
+              epoch_year_=list["epoch_year"];
+            
+            Rcpp::StringVector flagVec;
+            if (list.containsElementNamed("flags")) {
+              flagVec = list["flags"];
+              for (Rcpp::StringVector::iterator itr = flagVec.begin(); itr != flagVec.end(); ++itr) {
+                std::string aflag = Rcpp::as<std::string>(*itr);
+                if (!aflag.compare("RP_SUFFIX")) 
+                  aPrefix=false;
+                if(!aflag.compare("RP_DATE_PREFER_MDY"))
+                  prefer_mdy_=true;
+              }
+            }
+            
+           if(list.containsElementNamed("check.str")){
+              string aStr=Rcpp::as<std::string>(list["check.str"]);
+              Xapian::DateValueRangeProcessor *date_proc=new Xapian::DateValueRangeProcessor(aVal,aStr,aPrefix,prefer_mdy_,epoch_year_);
+              queryparser.add_valuerangeprocessor(date_proc);
+            }
+            else{
+              Xapian::DateValueRangeProcessor *date_proc=new Xapian::DateValueRangeProcessor(aVal,prefer_mdy_,epoch_year_);
+              queryparser.add_valuerangeprocessor(date_proc);
+            }
+          }
+        }
+      } 
+      
+#endif
+      
 	std::string aQuery = Rcpp::as<std::string>(query["queryString"]);
 	returnQuery = queryparser.parse_query(aQuery);
 	return returnQuery;
@@ -224,8 +322,10 @@ parseQuery(Rcpp::List & query)
 	    aOP = Xapian::Query::OP_ELITE_SET;
 	else if (qOP == "OP_FILTER")
 	    aOP = Xapian::Query::OP_FILTER;
+#if defined(XAPIAN_OP_MAX_SUPPORT)
 	else if (qOP == "OP_MAX")
 	    aOP = Xapian::Query::OP_MAX;
+#endif
 	else
 	    aOP = Xapian::Query::OP_NEAR;
 
@@ -470,3 +570,4 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
     } else
 	return NULL;
 }
+
