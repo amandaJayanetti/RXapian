@@ -177,6 +177,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// deleteWrapper
+void deleteWrapper(SEXP dbpath, SEXP docid);
+RcppExport SEXP RXapian_deleteWrapper(SEXP dbpathSEXP, SEXP docidSEXP) {
+  BEGIN_RCPP
+  Rcpp::RNGScope __rngScope;
+  Rcpp::traits::input_parameter< SEXP >::type dbpath(dbpathSEXP);
+  Rcpp::traits::input_parameter< SEXP >::type docid(docidSEXP);
+  deleteWrapper(dbpath, docid);
+  return R_NilValue;
+  END_RCPP
+}
 // indexWrapper
 void indexWrapper(Rcpp::CharacterVector& dbpath, Rcpp::DataFrame& dataFrame, Rcpp::NumericVector& idColumn, Rcpp::List& indexFields, Rcpp::List& filterFields, Rcpp::List& valueSlots, Rcpp::CharacterVector& stemmer);
 RcppExport SEXP RXapian_indexWrapper(SEXP dbpathSEXP, SEXP dataFrameSEXP, SEXP idColumnSEXP, SEXP indexFieldsSEXP, SEXP filterFieldsSEXP, SEXP valueSlotsSEXP, SEXP stemmerSEXP) {

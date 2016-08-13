@@ -227,6 +227,22 @@ has_positions <- function(dbpath) {
     .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
 }
 
+#' xapian_delete wrapper
+#' 
+#' @param dbpath path to a Xapian Database
+#' @param docid the document ID of the document to be removed
+#' @examples
+#' \dontrun{
+#' dbpath<- c("path/to/database")
+#' docid <- 20
+#' xapian_delete(dbpath,docid)
+#' }
+#' 
+#' @return none
+deleteWrapper <- function(dbpath, docid) {
+  invisible(.Call('RXapian_deleteWrapper', PACKAGE = 'RXapian', dbpath, docid))
+}
+
 #' indexing wrapper
 #'
 #' @param dbpath	path to a Xapian database
