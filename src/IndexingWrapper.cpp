@@ -158,16 +158,22 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    int colNo;
 
 	    if (list.containsElementNamed("prefix")) {
-		try {
-		    if (list.containsElementNamed("index")) {
+		if (list.containsElementNamed("index")) {
+		    try {
 			colNo = Rcpp::as<int>(list["index"]);
-		    } else {
-			std::string colName = Rcpp::as<std::string>(list["name"]);
-			colNo = colIndex(dataFrame, colName);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for index");
 		    }
-		} catch (...) {
+		} else if (list.containsElementNamed("name")) {
+		    std::string colName;
+		    try {
+			colName = Rcpp::as<std::string>(list["name"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for name");
+		    }
+		    colNo = colIndex(dataFrame, colName);
+		} else
 		    Rcpp::stop("Either name or index of the columns should be specified.");
-		}
 
 		if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 		std::string prefix = Rcpp::as<std::string>(list["prefix"]);
@@ -181,16 +187,23 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    Rcpp::List list = it.operator*();
 	    int colNo;
 
-	    try {
-		if (list.containsElementNamed("index")) {
-		    colNo = Rcpp::as<int>(list["index"]);
-		} else {
-		    std::string colName = Rcpp::as<std::string>(list["name"]);
+	    if (list.containsElementNamed("index")) {
+		    try {
+			colNo = Rcpp::as<int>(list["index"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for index");
+		    }
+		} else if (list.containsElementNamed("name")) {
+		    std::string colName;
+		    try {
+			colName = Rcpp::as<std::string>(list["name"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for name");
+		    }
 		    colNo = colIndex(dataFrame, colName);
-		}
-	    } catch (...) {
-		Rcpp::stop("Either name or index of the columns should be specified.");
-	    }
+		} else
+		    Rcpp::stop("Either name or index of the columns should be specified.");
+	    
 	    if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 	    const string & field = Rcpp::as<std::string>(dfRow[colNo]);
 	    termgenerator.index_text(field);
@@ -203,16 +216,22 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    Rcpp::List list = it.operator*();
 	    int colNo;
 
-	    try {
-		if (list.containsElementNamed("index")) {
-		    colNo = Rcpp::as<int>(list["index"]);
-		} else {
-		    std::string colName = Rcpp::as<std::string>(list["name"]);
+	    if (list.containsElementNamed("index")) {
+		    try {
+			colNo = Rcpp::as<int>(list["index"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for index");
+		    }
+		} else if (list.containsElementNamed("name")) {
+		    std::string colName;
+		    try {
+			colName = Rcpp::as<std::string>(list["name"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for name");
+		    }
 		    colNo = colIndex(dataFrame, colName);
-		}
-	    } catch (...) {
-		Rcpp::stop("Either name or index of the columns should be specified.");
-	    }
+		} else
+		    Rcpp::stop("Either name or index of the columns should be specified.");
 
 	    if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 	    const string & field = Rcpp::as<std::string>(dfRow[colNo]);
