@@ -490,16 +490,29 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
     Xapian::Database db(path);
 
     // Create a Xapian::Query from user specified data
-    Xapian::Query query = parseQuery(queryList);
-
+    Xapian::Query query;
+    try{
+    query = parseQuery(queryList);
+    }catch(...){
+      Rcpp::stop("An error occured while parsing the content of queryList parameter. Check if input arguments to queryList are in the right format.");  
+    }
+    
     // Use a Xapian::Enquire object on the Xapian::Database to run the query
     Xapian::Enquire enquire(db);
     enquire.set_query(query);
-
-    // Set up a spy to inspect a particular value at specified slot
+    
+    // first- defines starting point within result set
+    // pagesize - defines number of records to retrieve
+    Xapian::doccount first = 0;
+    Xapian::doccount maxitems = 10;
+    Xapian::doccount checkatleast = 0;
+    
     std::vector<Xapian::ValueCountMatchSpy *> spy;
     bool returnSpy = false;
     Rcpp::NumericVector spyVec;
+    
+    try{
+    // Set up a spy to inspect a particular value at specified slot
     if (enquireList.containsElementNamed("return.spy")) {
 	spyVec = enquireList["return.spy"];
 	spy = parseSpy(enquire, spyVec);
@@ -508,15 +521,13 @@ searchWrapper(Rcpp::CharacterVector & dbpath, Rcpp::List & enquireList, Rcpp::Li
     
     parseEnquire(enquire,enquireList);
 
-    // first- defines starting point within result set
-    // pagesize - defines number of records to retrieve
-    Xapian::doccount first = 0;
-    Xapian::doccount maxitems = 10;
-    Xapian::doccount checkatleast = 0;
-
     if (enquireList.containsElementNamed("first")) first = Rcpp::as<int>(enquireList["first"]);
     if (enquireList.containsElementNamed("maxitems")) maxitems = Rcpp::as<int>(enquireList["maxitems"]);
     if (enquireList.containsElementNamed("checkatleast")) checkatleast = Rcpp::as<int>(enquireList["checkatleast"]);
+    
+    }catch(...){
+      Rcpp::stop("An error occured while parsing the content of enquireList parameter. Check if input arguments to enquireList are in the right format.");
+    }
 
     // Create and return a data.frame with results for the searched query
 
