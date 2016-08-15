@@ -257,9 +257,6 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 		if (list.containsElementNamed("index")) {
 		    try {
 			colNo = Rcpp::as<int>(list["index"]);
-			if (colNo < 0 || colNo > dfCols)
-			    Rcpp::stop(
-			        "Invalid argument: index should correspond to a column number in the data frame");
 		    } catch (...) {
 			Rcpp::stop("Invalid argument for index");
 		    }
@@ -274,6 +271,10 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 		} else
 		    Rcpp::stop("Either name or index of the columns should be specified.");
 
+		if (colNo < 0 || colNo > dfCols)
+			    Rcpp::stop(
+			        "Invalid argument: index should correspond to a column number in the data frame");
+		
 		const string & field = Rcpp::as<std::string>(dfRow[colNo]);
 
 		if (serialiseVal) {
