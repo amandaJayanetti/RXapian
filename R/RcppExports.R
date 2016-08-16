@@ -227,15 +227,33 @@ has_positions <- function(dbpath) {
   .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
 }
 
+#' xapian_delete wrapper
+#'
+#' @param dbpath path to a Xapian Database
+#' @param docid  the document ID of the document to be removed
+#' @param unique_term  the term to remove references to
+#' @examples
+#' \dontrun{
+#' dbpath<- c("path/to/database")
+#' docid <- 20
+#' deleteWrapper(dbpath= dbpath,docid= docid)
+#' }
+#'
+#' @return none
+deleteWrapper <- function(dbpath, docid, unique_term) {
+  invisible(.Call('RXapian_deleteWrapper', PACKAGE = 'RXapian', dbpath, docid, unique_term))
+}
+
 #' indexing wrapper
 #'
 #' @param dbpath	path to a Xapian database
 #' @param dataFrame	data frame to be indexed
-#' @param idColumn	index of a column in the data frame whose row value will be used as a unique identifier to each document(row)
+#' @param idColumn	index of a column in the data frame whose row value 
+#'			will be used as a unique identifier to each document(row)
 #' @param indexFields	list of 'list of fields' that will be indexed using a Xapian::TermGenerator
 #' @param filterFields	list with information on boolean terms to be added to Xapian::Document
 #' @param stemmer 	the stemmer that should be applied to the Xapian::TermGenerator
-#' @param valueSlots list of arguments required for advanced indexing
+#' @param valueSlots	list of arguments required for advanced indexing
 #' @examples
 #' \dontrun{
 #' db<- c("path/to/database")
