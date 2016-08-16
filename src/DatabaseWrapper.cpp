@@ -369,3 +369,33 @@ has_positions(SEXP dbpath)
     Xapian::Database db = Rcpp::as<Xapian::Database>(dbpath);
     return db.has_positions();
 }
+
+//' xapian_delete wrapper
+//'
+//' @param dbpath path to a Xapian Database
+//' @param docid  the document ID of the document to be removed
+//' @param unique_term  the term to remove references to
+//' @examples
+//' \dontrun{
+//' dbpath<- c("path/to/database")
+//' docid <- 20
+//' deleteWrapper(dbpath= dbpath,docid= docid)
+//' }
+//'
+//' @return none
+// [[Rcpp::export]]
+void
+deleteWrapper(SEXP dbpath, SEXP docid, SEXP unique_term)
+{
+    std::string path = Rcpp::as<std::string>(dbpath);
+    Xapian::WritableDatabase db(path, Xapian::DB_OPEN);
+
+    if (!Rf_isNull(docid)) {
+	Xapian::docid id = Rcpp::as<int>(docid);
+	db.delete_document(id);
+    }
+    if (!Rf_isNull(unique_term)) {
+	std::string term = Rcpp::as<std::string>(unique_term);
+	db.delete_document(term);
+    }
+}
