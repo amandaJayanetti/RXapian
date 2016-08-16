@@ -12,7 +12,7 @@
 #'
 #' @return list of information about the Xapian database at specified location
 databaseInfo <- function(dbpath) {
-    .Call('RXapian_databaseInfo', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_databaseInfo', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database setmetadata wrapper
@@ -30,7 +30,7 @@ databaseInfo <- function(dbpath) {
 #'
 #' @return none
 setmetadata <- function(dbpath, key, value) {
-    invisible(.Call('RXapian_setmetadata', PACKAGE = 'RXapian', dbpath, key, value))
+  invisible(.Call('RXapian_setmetadata', PACKAGE = 'RXapian', dbpath, key, value))
 }
 
 #' Database getmetadata wrapper
@@ -46,7 +46,7 @@ setmetadata <- function(dbpath, key, value) {
 #'
 #' @return user-specified metadata associated with the given key
 getmetadata <- function(dbpath, key) {
-    .Call('RXapian_getmetadata', PACKAGE = 'RXapian', dbpath, key)
+  .Call('RXapian_getmetadata', PACKAGE = 'RXapian', dbpath, key)
 }
 
 #' Database spelling_suggestion wrapper
@@ -62,7 +62,7 @@ getmetadata <- function(dbpath, key) {
 #'
 #' @return a spelling correction to a potentially misspelled word
 spelling_suggestion <- function(dbpath, arg) {
-    .Call('RXapian_spelling_suggestion', PACKAGE = 'RXapian', dbpath, arg)
+  .Call('RXapian_spelling_suggestion', PACKAGE = 'RXapian', dbpath, arg)
 }
 
 #' Database collection_freq wrapper
@@ -78,7 +78,7 @@ spelling_suggestion <- function(dbpath, arg) {
 #'
 #' @return total number of occurrences of the given term
 collection_freq <- function(dbpath, tname) {
-    .Call('RXapian_collection_freq', PACKAGE = 'RXapian', dbpath, tname)
+  .Call('RXapian_collection_freq', PACKAGE = 'RXapian', dbpath, tname)
 }
 
 #' Database value_freq wrapper
@@ -94,7 +94,7 @@ collection_freq <- function(dbpath, tname) {
 #'
 #' @return frequency of the given value slot
 value_freq <- function(dbpath, slot) {
-    .Call('RXapian_value_freq', PACKAGE = 'RXapian', dbpath, slot)
+  .Call('RXapian_value_freq', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database value_lower_bound wrapper
@@ -110,7 +110,7 @@ value_freq <- function(dbpath, slot) {
 #'
 #' @return  a lower bound on the values stored in the given value slot
 value_lower_bound <- function(dbpath, slot) {
-    .Call('RXapian_value_lower_bound', PACKAGE = 'RXapian', dbpath, slot)
+  .Call('RXapian_value_lower_bound', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database value_upper_bound wrapper
@@ -126,7 +126,7 @@ value_lower_bound <- function(dbpath, slot) {
 #'
 #' @return an upper bound on the values stored in the given value slot
 value_upper_bound <- function(dbpath, slot) {
-    .Call('RXapian_value_upper_bound', PACKAGE = 'RXapian', dbpath, slot)
+  .Call('RXapian_value_upper_bound', PACKAGE = 'RXapian', dbpath, slot)
 }
 
 #' Database uuid wrapper
@@ -140,7 +140,7 @@ value_upper_bound <- function(dbpath, slot) {
 #'
 #' @return a UUID for the database
 uuid <- function(dbpath) {
-    .Call('RXapian_uuid', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_uuid', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doccount wrapper
@@ -154,7 +154,7 @@ uuid <- function(dbpath) {
 #'
 #' @return number of documents in the database
 doccount <- function(dbpath) {
-    .Call('RXapian_doccount', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_doccount', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database avlength wrapper
@@ -168,7 +168,7 @@ doccount <- function(dbpath) {
 #'
 #' @return average length of the documents in the database
 avlength <- function(dbpath) {
-    .Call('RXapian_avlength', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_avlength', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doclength_lower_bound wrapper
@@ -182,7 +182,7 @@ avlength <- function(dbpath) {
 #'
 #' @return a lower bound on the length of a document in the database
 doclength_lower_bound <- function(dbpath) {
-    .Call('RXapian_doclength_lower_bound', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_doclength_lower_bound', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database doclength_upper_bound wrapper
@@ -196,7 +196,7 @@ doclength_lower_bound <- function(dbpath) {
 #'
 #' @return an upper bound on the length of a document in the database
 doclength_upper_bound <- function(dbpath) {
-    .Call('RXapian_doclength_upper_bound', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_doclength_upper_bound', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database lastdocid wrapper
@@ -210,7 +210,7 @@ doclength_upper_bound <- function(dbpath) {
 #'
 #' @return highest document id which has been used in the database
 lastdocid <- function(dbpath) {
-    .Call('RXapian_lastdocid', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_lastdocid', PACKAGE = 'RXapian', dbpath)
 }
 
 #' Database has_positions wrapper
@@ -224,7 +224,7 @@ lastdocid <- function(dbpath) {
 #'
 #' @return whether this database has any positional information
 has_positions <- function(dbpath) {
-    .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
+  .Call('RXapian_has_positions', PACKAGE = 'RXapian', dbpath)
 }
 
 #' indexing wrapper
@@ -248,7 +248,7 @@ has_positions <- function(dbpath) {
 #'
 #' @return none
 indexWrapper <- function(dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer) {
-    invisible(.Call('RXapian_indexWrapper', PACKAGE = 'RXapian', dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer))
+  invisible(.Call('RXapian_indexWrapper', PACKAGE = 'RXapian', dbpath, dataFrame, idColumn, indexFields, filterFields, valueSlots, stemmer))
 }
 
 #' Search wrapper
@@ -269,6 +269,6 @@ indexWrapper <- function(dbpath, dataFrame, idColumn, indexFields, filterFields,
 #'
 #' @return
 searchWrapper <- function(dbpath, enquireList, queryList) {
-    .Call('RXapian_searchWrapper', PACKAGE = 'RXapian', dbpath, enquireList, queryList)
+  .Call('RXapian_searchWrapper', PACKAGE = 'RXapian', dbpath, enquireList, queryList)
 }
 

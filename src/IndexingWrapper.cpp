@@ -1,19 +1,18 @@
 #include <Rcpp.h>
-#include <xapian.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <xapian.h>
 
 using namespace std;
 
 int
 rowCount(Rcpp::DataFrame & dataframe)
 {
-    Rcpp::DataFrame df = dataframe;
-    Rcpp::NumericVector aCol = df[0];
+    Rcpp::NumericVector aCol = dataframe[0];
     int rows = aCol.size();
     return rows;
 }
@@ -21,38 +20,32 @@ rowCount(Rcpp::DataFrame & dataframe)
 int
 colCount(Rcpp::DataFrame & dataframe)
 {
-    Rcpp::DataFrame df = dataframe;
-    int cols = df.size();
+    int cols = dataframe.size();
     return cols;
 }
 
 Rcpp::StringVector
 colNames(Rcpp::DataFrame & dataframe)
 {
-    Rcpp::DataFrame df = dataframe;
-    Rcpp::StringVector nameVec = df.attr("names");
+    Rcpp::StringVector nameVec = dataframe.attr("names");
     return nameVec;
 }
 
 Rcpp::String
 columnName(Rcpp::DataFrame & dataFrame, int colIndex)
 {
-    Rcpp::DataFrame df = dataFrame;
-    int index = colIndex;
-    Rcpp::StringVector columns = colNames(df);
-    return columns[index];
+    Rcpp::StringVector columns = colNames(dataFrame);
+    return columns[colIndex];
 }
 
 int
 colIndex(Rcpp::DataFrame & dataFrame, string colName)
 {
-    Rcpp::DataFrame df = dataFrame;
-    string name = colName;
-    Rcpp::StringVector columns = colNames(df);
+    Rcpp::StringVector columns = colNames(dataFrame);
     int index = 0;
     for (Rcpp::StringVector::iterator it = columns.begin(); it != columns.end(); ++it) {
 	string col = Rcpp::as<std::string>(*it);
-	if (name == col) {
+	if (colName == col) {
 	    break;
 	}
 	index++;
@@ -63,16 +56,14 @@ colIndex(Rcpp::DataFrame & dataFrame, string colName)
 Rcpp::StringVector
 parseRow(Rcpp::DataFrame & dataframe, int row)
 {
-    Rcpp::DataFrame df = dataframe;
-    int rowNo = row;
-    int nRows = rowCount(df);
-    int nCols = df.size();
+    int nRows = rowCount(dataframe);
+    int nCols = dataframe.size();
     Rcpp::StringVector rowVec;
 
     for (int i = 0; i < nRows; i++) {
-	if (i == rowNo) {
+	if (i == row) {
 	    for (int j = 0; j < nCols; j++) {
-		Rcpp::StringVector column = df[j]; //selecting jth column of data frame
+		Rcpp::StringVector column = dataframe[j]; // selecting jth column of data frame
 		rowVec.push_back(Rcpp::as<string>(column[i]));
 	    }
 	    break;
@@ -84,15 +75,13 @@ parseRow(Rcpp::DataFrame & dataframe, int row)
 vector<std::string>
 parseField(const string & field, const char & separator)
 {
-    string aField = field;
-    const char aSeparator = separator;
     vector<std::string> result;
     size_t character = 0;
     do {
 	size_t start = character;
-	character = aField.find(aSeparator, character);
+	character = field.find(separator, character);
 	size_t len = character - start;
-	string aField2 = Xapian::Unicode::tolower(aField.substr(start, len));
+	string aField2 = Xapian::Unicode::tolower(field.substr(start, len));
 	size_t trim = aField2.find_last_not_of(" \t");
 	if (trim != string::npos) {
 	    aField2.resize(trim + 1);
@@ -108,11 +97,12 @@ parseField(const string & field, const char & separator)
 //'
 //' @param dbpath	path to a Xapian database
 //' @param dataFrame	data frame to be indexed
-//' @param idColumn	index of a column in the data frame whose row value will be used as a unique identifier to each document(row)
+//' @param idColumn	index of a column in the data frame whose row value 
+//'			will be used as a unique identifier to each document(row)
 //' @param indexFields	list of 'list of fields' that will be indexed using a Xapian::TermGenerator
 //' @param filterFields	list with information on boolean terms to be added to Xapian::Document
 //' @param stemmer 	the stemmer that should be applied to the Xapian::TermGenerator
-//' @param valueSlots list of arguments required for advanced indexing
+//' @param valueSlots	list of arguments required for advanced indexing
 //' @examples
 //' \dontrun{
 //' db<- c("path/to/database")
@@ -132,12 +122,9 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 {
 
     std::string path = Rcpp::as<std::string>(dbpath);
-    Rcpp::DataFrame df = dataFrame;
     int id = Rcpp::as<int>(idColumn);
-    int dfCols = colCount(df);
+    int dfCols = colCount(dataFrame);
     if (id < 0 || id > dfCols) Rcpp::stop("Invalid argument for indexCol");
-    Rcpp::List indexList = indexFields;
-    Rcpp::List filterList = filterFields;
 
     // Create or open the Xapian::Database at the specified location
     Xapian::WritableDatabase db(path, Xapian::DB_CREATE_OR_OPEN);
@@ -145,21 +132,22 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
     // Set up a Xapian::Termgenerator to be used in indexing.
     Xapian::TermGenerator termgenerator;
 
-    //Add a stemmer to Xapian::Termgenerator
+    // Add a stemmer to Xapian::Termgenerator
     if (stemmer) {
 	std::string lang = Rcpp::as<std::string>(stemmer);
 	termgenerator.set_stemmer(Xapian::Stem(lang));
     }
 
-    int nRows = rowCount(df);
+    int nRows = rowCount(dataFrame);
 
-    // Extract data in data.frame's rows and add them as Xapian::Documents to the Xapian::Database
+    // Extract data in data.frame's rows and add them as Xapian::Documents to the
+    // Xapian::Database
     for (int i = 0; i < nRows; i++) {
 
 	// Extract a row from the data.frame
-	Rcpp::StringVector dfRow = parseRow(df, i);
+	Rcpp::StringVector dfRow = parseRow(dataFrame, i);
 
-	//Create a document and add it to the Xapian::Termgenerator
+	// Create a document and add it to the Xapian::Termgenerator
 	Xapian::Document doc;
 	termgenerator.set_document(doc);
 
@@ -167,21 +155,27 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	string docString = identifier;
 
 	// Index each column of the data.frame with a suitable prefix
-	for (Rcpp::List::iterator it = indexList.begin(); it != indexList.end(); ++it) {
+	for (Rcpp::List::iterator it = indexFields.begin(); it != indexFields.end(); ++it) {
 	    Rcpp::List list = it.operator*();
 	    int colNo;
 
 	    if (list.containsElementNamed("prefix")) {
-		try {
-		    if (list.containsElementNamed("index")) {
+		if (list.containsElementNamed("index")) {
+		    try {
 			colNo = Rcpp::as<int>(list["index"]);
-		    } else {
-			std::string colName = Rcpp::as<std::string>(list["name"]);
-			colNo = colIndex(df, colName);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for index");
 		    }
-		} catch (...) {
+		} else if (list.containsElementNamed("name")) {
+		    std::string colName;
+		    try {
+			colName = Rcpp::as<std::string>(list["name"]);
+		    } catch (...) {
+			Rcpp::stop("Invalid argument for name");
+		    }
+		    colNo = colIndex(dataFrame, colName);
+		} else
 		    Rcpp::stop("Either name or index of the columns should be specified.");
-		}
 
 		if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 		std::string prefix = Rcpp::as<std::string>(list["prefix"]);
@@ -191,20 +185,27 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	}
 
 	// Index columns without prefixes for general search
-	for (Rcpp::List::iterator it = indexList.begin(); it != indexList.end(); ++it) {
+	for (Rcpp::List::iterator it = indexFields.begin(); it != indexFields.end(); ++it) {
 	    Rcpp::List list = it.operator*();
 	    int colNo;
 
-	    try {
-		if (list.containsElementNamed("index")) {
+	    if (list.containsElementNamed("index")) {
+		try {
 		    colNo = Rcpp::as<int>(list["index"]);
-		} else {
-		    std::string colName = Rcpp::as<std::string>(list["name"]);
-		    colNo = colIndex(df, colName);
+		} catch (...) {
+		    Rcpp::stop("Invalid argument for index");
 		}
-	    } catch (...) {
+	    } else if (list.containsElementNamed("name")) {
+		std::string colName;
+		try {
+		    colName = Rcpp::as<std::string>(list["name"]);
+		} catch (...) {
+		    Rcpp::stop("Invalid argument for name");
+		}
+		colNo = colIndex(dataFrame, colName);
+	    } else
 		Rcpp::stop("Either name or index of the columns should be specified.");
-	    }
+
 	    if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 	    const string & field = Rcpp::as<std::string>(dfRow[colNo]);
 	    termgenerator.index_text(field);
@@ -212,21 +213,27 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    docString = docString + "\n" + field;
 	}
 
-	//Add boolean terms to Xapian::Document
-	for (Rcpp::List::iterator it = filterList.begin(); it != filterList.end(); ++it) {
+	// Add boolean terms to Xapian::Document
+	for (Rcpp::List::iterator it = filterFields.begin(); it != filterFields.end(); ++it) {
 	    Rcpp::List list = it.operator*();
 	    int colNo;
 
-	    try {
-		if (list.containsElementNamed("index")) {
+	    if (list.containsElementNamed("index")) {
+		try {
 		    colNo = Rcpp::as<int>(list["index"]);
-		} else {
-		    std::string colName = Rcpp::as<std::string>(list["name"]);
-		    colNo = colIndex(df, colName);
+		} catch (...) {
+		    Rcpp::stop("Invalid argument for index");
 		}
-	    } catch (...) {
+	    } else if (list.containsElementNamed("name")) {
+		std::string colName;
+		try {
+		    colName = Rcpp::as<std::string>(list["name"]);
+		} catch (...) {
+		    Rcpp::stop("Invalid argument for name");
+		}
+		colNo = colIndex(dataFrame, colName);
+	    } else
 		Rcpp::stop("Either name or index of the columns should be specified.");
-	    }
 
 	    if (colNo < 0 || colNo > dfCols) Rcpp::stop("Invalid argument for indexFields");
 	    const string & field = Rcpp::as<std::string>(dfRow[colNo]);
@@ -244,7 +251,7 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    }
 	}
 
-	//Add value slots
+	// Add value slots
 	for (Rcpp::List::iterator it = valueSlots.begin(); it != valueSlots.end(); ++it) {
 	    Rcpp::List list = *it;
 	    bool serialiseVal = false;
@@ -271,9 +278,6 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 		if (list.containsElementNamed("index")) {
 		    try {
 			colNo = Rcpp::as<int>(list["index"]);
-			if (colNo < 0 || colNo > dfCols)
-			    Rcpp::stop(
-			        "Invalid argument: index should correspond to a column number in the data frame");
 		    } catch (...) {
 			Rcpp::stop("Invalid argument for index");
 		    }
@@ -284,9 +288,13 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 		    } catch (...) {
 			Rcpp::stop("Invalid argument for name");
 		    }
-		    colNo = colIndex(df, colName);
+		    colNo = colIndex(dataFrame, colName);
 		} else
 		    Rcpp::stop("Either name or index of the columns should be specified.");
+
+		if (colNo < 0 || colNo > dfCols)
+		    Rcpp::stop("Invalid argument: index should correspond to a column "
+		               "number in the data frame");
 
 		const string & field = Rcpp::as<std::string>(dfRow[colNo]);
 
@@ -327,11 +335,12 @@ indexWrapper(Rcpp::CharacterVector & dbpath, Rcpp::DataFrame & dataFrame, Rcpp::
 	    }
 	}
 
-	//Store all the columns for display purposes
+	// Store all the columns for display purposes
 	doc.set_data(docString);
 
-	//Use an identifier to ensure each object ends up in the Xapian::Database only once
-	//even if xapian_index() function is called multiple times
+	// Use an identifier to ensure each object ends up in the Xapian::Database
+	// only once
+	// even if xapian_index() function is called multiple times
 	string idterm = "Q" + identifier;
 	doc.add_boolean_term(idterm);
 	db.replace_document(idterm, doc);
