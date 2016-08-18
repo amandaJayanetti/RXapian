@@ -254,3 +254,27 @@ xapian_dbValue_upper_bound<-function(dbpath,
   checkmate::assertNumber(slot)
   value_upper_bound(dbpath,slot)
 }
+
+#' xapian_delete
+#'
+#' @param dbpath path to a Xapian database
+#' @param docid the document ID of the document to be removed
+#' @param unique_term The term to remove references to
+#' @examples
+#' \dontrun{
+#' db<- c("path/to/database")
+#' docid <- 20
+#' xapian_delete(dbpath= db,docid= docid)
+#' }
+#' @return none
+#' @export
+xapian_delete<-function(dbpath,
+                        docid=NULL,
+                        unique_term=NULL){
+  checkmate::assertCharacter(dbpath)
+  if(!is.null(docid))
+    checkmate::assertNumber(docid)
+  if(!is.null(unique_term))
+    checkmate::assertCharacter(unique_term)
+  deleteWrapper(dbpath,docid,unique_term)
+}
