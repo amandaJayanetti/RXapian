@@ -1,5 +1,7 @@
 ## R bindings for Xapian search engine library.
 
+Please make sure that you have Xapian installed. (Xapian can be installed in Ububtu with command: sudo apt-get install libxapian-dev)
+
 ###### Installing RXapian
 
 ```R
@@ -30,6 +32,7 @@ install_github("amandaJayanetti/RXapian")
   id<-c(0)
   indexFields<-list(list(index=2,prefix="S"))
   
+  library('RXapian')
   xapian_index(dbpath = db,dataFrame = data,idColumn = id,indexFields = indexFields, stemmer = "en")
   
   ```
