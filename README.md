@@ -67,4 +67,4 @@ install_github("amandaJayanetti/RXapian")
   ```
 
 
-###### For more examples refer package tests
+###### For more examples refer package demo
